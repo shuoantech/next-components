@@ -38,6 +38,7 @@ import java.util.Set;
  * 多租户配置
  * @author qiwumind
  */
+@ConfigurationProperties(prefix = SystemConstants.Prefix.TENANT) // 绑定 next.tenant.* 配置
 @ConditionalOnProperty(prefix = SystemConstants.Prefix.TENANT, value = "enable", matchIfMissing = true) // 允许使用 next.tenant.enable=false 禁用多租户
 @Data
 public class TenantProperties {

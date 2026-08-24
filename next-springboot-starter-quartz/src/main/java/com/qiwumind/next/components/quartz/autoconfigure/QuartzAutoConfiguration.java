@@ -31,13 +31,19 @@ import com.qiwumind.next.components.quartz.core.JobTask;
 import com.qiwumind.next.components.quartz.core.constant.ScheduleConstants;
 import com.qiwumind.next.components.quartz.core.job.AbstractQuartzJob;
 import com.qiwumind.next.components.quartz.core.job.QuartzTimeBeanFactory;
+import com.qiwumind.next.components.redis.autoconfigure.RedisConfiguration;
 import com.qiwumind.next.components.redis.core.cache.JedisCache;
 import com.qiwumind.next.components.redis.core.lock.JedisLockService;
+import lombok.extern.slf4j.Slf4j;
 import org.quartz.Scheduler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.boot.autoconfigure.AutoConfiguration;
+import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.quartz.SchedulerFactoryBean;
@@ -46,6 +52,7 @@ import javax.sql.DataSource;
 import java.util.Properties;
 
 @Configuration
+@ConditionalOnProperty(prefix = SystemConstants.Prefix.QUARTZ, name = "enabled", havingValue = "true")
 public class QuartzAutoConfiguration {
 
 
