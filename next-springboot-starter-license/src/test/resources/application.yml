@@ -1,0 +1,29 @@
+server:
+  port: 8080
+
+next:
+  license:
+    enabled: true
+    file:
+      path: license/license.dat
+      backup-path: license/license.dat.bak
+      auto-create: true
+    validation:
+      strict-mode: true
+      grace-period: 7d
+      validate-on-startup: true
+      allow-grace-period: true
+    signing:
+      private-key-path: keys/private.key
+      public-key-path: keys/public.key
+      algorithm: SHA384withRSA
+      provider: BC
+      key-size: 2048
+    binding:
+      require-ip-binding: false
+      require-mac-binding: false
+      require-hardware-binding: false
+
+spring:
+  application:
+    name: license-demo

@@ -1,0 +1,3 @@
+com.qiwumind.next.components.mybatis.autoconfigure.NextDataSourceAutoConfiguration
+com.qiwumind.next.components.mybatis.autoconfigure.NextMybatisAutoConfiguration
+com.qiwumind.next.components.mybatis.autoconfigure.NextTranslateAutoConfiguration

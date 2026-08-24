@@ -1,0 +1,4 @@
+com.qiwumind.next.components.idempotent.config.QiwumindIdempotentConfiguration
+com.qiwumind.next.components.lock4j.config.QiwumindLock4jConfiguration
+com.qiwumind.next.components.ratelimiter.config.QiwumindRateLimiterConfiguration
+com.qiwumind.next.components.signature.config.QiwumindApiSignatureAutoConfiguration

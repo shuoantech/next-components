@@ -1,0 +1,40 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: license-demo-app
+
+# License配置（自动由next-springboot-starter-license加载）
+next:
+  license:
+    enabled: true
+    file:
+      path: license/license.dat
+      backup-path: license/license.dat.bak
+      auto-create: true
+    validation:
+      strict-mode: true
+      grace-period: 15d
+      validate-on-startup: true
+      allow-grace-period: true
+      global-block-enabled: true  # 启用全局拦截（License失效时拦截所有接口）
+      exclude-paths:  # 可选：自定义排除路径
+        - /health
+        - /api/license/**
+        - /api/keys/generate
+        - /api/system/info
+    signing:
+      private-key-path: keys/private.key
+      public-key-path: keys/public.key
+      algorithm: SHA384withRSA
+      provider: BC
+      key-size: 2048
+    binding:
+      require-ip-binding: false
+      require-mac-binding: false
+      require-hardware-binding: false
+
+logging:
+  level:
+    com.qiwumind.next.components.license: DEBUG

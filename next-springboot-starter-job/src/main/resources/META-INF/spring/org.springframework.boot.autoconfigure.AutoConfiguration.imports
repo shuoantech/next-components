@@ -1,0 +1,2 @@
+com.qiwumind.next.components.quartz.config.QiwumindQuartzAutoConfiguration
+com.qiwumind.next.components.quartz.config.QiwumindAsyncAutoConfiguration

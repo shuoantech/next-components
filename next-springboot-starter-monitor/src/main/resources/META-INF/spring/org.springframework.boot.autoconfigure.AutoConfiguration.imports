@@ -1,0 +1,2 @@
+com.qiwumind.next.components.tracer.config.QiwumindTracerAutoConfiguration
+com.qiwumind.next.components.tracer.config.QiwumindMetricsAutoConfiguration

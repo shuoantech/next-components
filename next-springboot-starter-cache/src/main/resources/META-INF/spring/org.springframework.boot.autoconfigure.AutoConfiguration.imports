@@ -1,0 +1,2 @@
+com.qiwumind.next.components.cache.autoconfigure.BloomFilterAutoConfiguration
+com.qiwumind.next.components.cache.autoconfigure.CacheAutoConfiguration

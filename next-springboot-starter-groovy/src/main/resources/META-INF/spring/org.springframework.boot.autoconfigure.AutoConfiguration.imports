@@ -1,0 +1,4 @@
+com.qiwumind.next.components.groovy.autoconfigure.GroovyClasspathLoaderAutoConfiguration
+com.qiwumind.next.components.groovy.autoconfigure.GroovyEngineCoreAutoConfiguration
+com.qiwumind.next.components.groovy.autoconfigure.GroovyRedisLoaderAutoConfiguration
+com.qiwumind.next.components.groovy.autoconfigure.GroovyMysqlLoaderAutoConfiguration

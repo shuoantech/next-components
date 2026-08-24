@@ -1,0 +1,90 @@
+{
+  "properties": [
+    {
+      "name": "wechat.pay.enabled",
+      "type": "java.lang.Boolean",
+      "description": "是否启用微信支付",
+      "defaultValue": true
+    },
+    {
+      "name": "wechat.pay.api-version",
+      "type": "java.lang.String",
+      "description": "API版本: V2 或 V3",
+      "defaultValue": "V3"
+    },
+    {
+      "name": "wechat.pay.app-id",
+      "type": "java.lang.String",
+      "description": "公众号/小程序/APP的AppId"
+    },
+    {
+      "name": "wechat.pay.mch-id",
+      "type": "java.lang.String",
+      "description": "商户号"
+    },
+    {
+      "name": "wechat.pay.mch-key",
+      "type": "java.lang.String",
+      "description": "商户密钥（V2 API使用）"
+    },
+    {
+      "name": "wechat.pay.notify-url",
+      "type": "java.lang.String",
+      "description": "异步通知地址"
+    },
+    {
+      "name": "wechat.pay.trade-type",
+      "type": "java.lang.String",
+      "description": "交易类型",
+      "defaultValue": "JSAPI"
+    },
+    {
+      "name": "wechat.pay.sign-type",
+      "type": "java.lang.String",
+      "description": "签名类型",
+      "defaultValue": "MD5"
+    },
+    {
+      "name": "wechat.pay.http-timeout",
+      "type": "java.lang.Integer",
+      "description": "HTTP请求超时时间（毫秒）",
+      "defaultValue": 5000
+    },
+    {
+      "name": "wechat.pay.cert-path",
+      "type": "java.lang.String",
+      "description": "商户证书路径（V3 API使用）"
+    },
+    {
+      "name": "wechat.pay.cert-serial-no",
+      "type": "java.lang.String",
+      "description": "商户证书序列号（V3 API使用）"
+    },
+    {
+      "name": "wechat.pay.api-v3-key",
+      "type": "java.lang.String",
+      "description": "APIv3密钥（V3 API使用，回调解密必需）"
+    },
+    {
+      "name": "wechat.pay.private-key-path",
+      "type": "java.lang.String",
+      "description": "私钥路径（V3 API使用）"
+    },
+    {
+      "name": "wechat.pay.sub-mch-id",
+      "type": "java.lang.String",
+      "description": "子商户号（服务商模式）"
+    },
+    {
+      "name": "wechat.pay.sub-app-id",
+      "type": "java.lang.String",
+      "description": "子商户AppId（服务商模式）"
+    },
+    {
+      "name": "wechat.pay.use-sandbox-env",
+      "type": "java.lang.Boolean",
+      "description": "是否沙箱模式",
+      "defaultValue": false
+    }
+  ]
+}

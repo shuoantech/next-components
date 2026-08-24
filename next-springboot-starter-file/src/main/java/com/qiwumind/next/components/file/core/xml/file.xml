@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<file channel="sanxia" desc="放款对账文件" spacer="|&amp;|" head="Y" ignore="Y" targetencoding="GBK" format="fixed" count="10">
+	<string name="CustomerID" property="customer" length="40" desc="客户编号" sort="1" fill="R" filltext="S"/>
+	<string name="CERTID" length="40" desc="证件编号" fill="R" filltext="S"/>
+	<string name="BIRTHDAY" length="10" desc="出生日期" fill="L" filltext="S"/>
+	<decimal name="BusinessSum" length="22" desc="金额" point="N" />
+	<decimal name="PrincipalPenalty" length="22" desc="金额" point="Y" />
+	<number name="MobileTelephone" length="16" desc="手机号码" fill="no"/>
+</file>
+
+<file spacer="|+|">
+	<string name="CustomerID"/>
+	<string name="CERTID"/>
+	<string name="BIRTHDAY"/>
+	<decimal name="BusinessSum"/>
+	<decimal name="PrincipalPenalty"/>
+	<number name="MobileTelephone"/>
+</file>
+--说明文档：
+file：含有8个属性     channel--所属文件的渠道唯一标识， 默认DEFAULT
+				desc--描述选填 
+				spacer--间隔符号选填、生成文件时字段之间的间隔符号必填
+				head -- 是否含有文件头，Y含有，N不含有，默认Y含有
+				ignore -- 行尾是否忽略间隔符选填  Y是意味着不含有间隔符，N否意味着含有间隔符  ,  默认Y不含有
+				targetencoding--输出文件字符编码选填，默认utf-8 
+				format--格式选填 ，unfixed不固定长度 默认unfixed；   fixed固定长度
+				count--单个文本保存数据量选填
+				
+filed： 
+	   字段含有10个属性   	
+				fieldEnum--判断属性是字符、数字还是金额,默认string；string、decimal、number 三种类型
+				name--对应的字段名必填
+				property--对应的传值的map key 选填，不写默认同name字段
+				length--值长度选填，不填时需采用不固定长度
+				value--值 基本不填
+				desc--描述选填
+				point--报文是否含有小数点，N，Y，I 选填      默认I忽略这个格式，如果是decimal则必须填写Y或N
+				sort--排序 1-∞，选填  如果填写，一定按照升序填写即可  ，默认从上到下依次递增  
+				fill--根据固定长度是否补充内容选填  L左面补充内容，R右面补充内容 ，N不补充    默认N不补充 
+				filltext--填充内容选填  默认N不填充   "S-填充空格","N-不填充","0-填充数字0"
+				 
+如果file属性format="unfixed",则可以忽略fill、filltext、length
+如果file属性format="fixed",fill、filltext、length必填	
+file默认head=Y,ignore=Y,targetencoding=utf-8,format=unfixed, count= Integer.MAX_VALUE;
+
+
+如果file属性format="unfixed"，则point=I,fill=N，fillText=n
+
+如果field为string,则默认point="I",fill="R",filltext="S"
+如果field为decimal,则默认point="N",fill="L",filltext="0"
+如果field为number,则默认point="N",fill="L",filltext="0"
+				
+				

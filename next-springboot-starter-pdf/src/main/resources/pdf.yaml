@@ -1,0 +1,54 @@
+# ============================================================
+# PDF 生成器配置示例
+# ============================================================
+
+# --- 开发环境 ---
+spring:
+  profiles: dev
+  freemarker:
+    enabled: true
+    suffix: .ftl
+    template-loader-path: classpath:/templates/
+    cache: false
+    charset: UTF-8
+    content-type: text/html
+    check-template-location: true
+
+pdf:
+  enabled: true
+  fonts:
+    server-dir: /opt/server/fonts        # 服务器字体目录
+    classpath-dir: fonts/                 # classpath 内置字体目录
+  export:
+    debug-enabled: true                   # 开发环境开启调试，保存中间 HTML
+    debug-dir: /tmp/pdf-debug
+    page-size: A4
+    dpi: 96
+
+---
+# --- 生产环境 ---
+spring:
+  profiles: prod
+  freemarker:
+    enabled: true
+    suffix: .ftl
+    template-loader-path: classpath:/templates/
+    cache: true                           # 生产环境启用模板缓存
+    charset: UTF-8
+    content-type: text/html
+    check-template-location: true
+
+pdf:
+  enabled: true
+  fonts:
+    server-dir: /data/app/pdf/fonts       # 生产环境字体目录
+    classpath-dir: fonts/
+    # 自定义字体（可选）
+    # custom:
+    #   - path: /data/app/pdf/fonts/custom.ttf
+    #     name: 自定义字体
+    #     family: CustomFont
+  export:
+    debug-enabled: false                  # 生产环境关闭调试
+    page-size: A4
+    dpi: 96

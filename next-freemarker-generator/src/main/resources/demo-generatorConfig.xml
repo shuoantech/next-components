@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE generatorConfiguration PUBLIC "-//mybatis.org//DTD MyBatis Generator Configuration 1.0//EN"
+        "http://mybatis.org/dtd/mybatis-generator-config_1_0.dtd" >
+<generatorConfiguration>
+    <classPathEntry
+            location="/Users/likuisheng/Documents/repository/mysql/mysql-connector-java/8.0.28/mysql-connector-java-8.0.28.jar"/>
+
+    <context id="mysqlTables" targetRuntime="MyBatis3"
+             defaultModelType="flat">
+        <property name="javaFileEncoding" value="UTF-8"/>
+
+        <!-- 格式化java代码 -->
+        <property name="javaFormatter"
+                  value="org.mybatis.generator.api.dom.DefaultJavaFormatter"/>
+        <!-- 格式化XML代码 -->
+        <property name="xmlFormatter"
+                  value="org.mybatis.generator.api.dom.DefaultXmlFormatter"/>
+
+        <plugin type="org.mybatis.generator.plugins.MapperConfigPlugin">
+            <property name="fileName" value="sqlmap-config.xml"/>
+            <property name="targetPackage" value="mybatis"/>
+            <property name="targetProject" value="src/main/resources"/>
+        </plugin>
+
+        <plugin type="org.mybatis.generator.plugins.RenameExampleClassPlugin">
+            <property name="searchString" value="DOExample$"/>
+            <property name="replaceString" value="Criteria"/>
+        </plugin>
+        <!-- 配置自定义插件 -->
+        <plugin type="com.qiwumind.next.components.freemarker.plugin.EnhancedPaginationPlugin">
+
+        </plugin>
+        <!-- 配置自定义插件 -->
+        <plugin type="com.qiwumind.next.components.freemarker.plugin.FreemarkerGeneratorPlugin">
+            <property name="targetProjectPackage" value="com.qiwumind.admin"/>
+<!--            <property name="dtoPackage" value="qiwumind-admin/src/main/resources/templates"/>-->
+<!--            <property name="converterDtoPackage" value="qiwumind-admin/src/main/resources/templates"/>-->
+<!--            <property name="controllerPackage" value="qiwumind-admin/src/main/resources/templates"/>-->
+<!--            <property name="servicePackage" value="qiwumind-admin/src/main/resources/templates"/>-->
+        </plugin>
+
+        <!-- 这里的type里写的是你的实现类的类全路径 -->
+        <commentGenerator  type="com.qiwumind.next.components.freemarker.generator.CustomCommentGenerator">
+            <!-- 可选：禁止生成默认的日期注释 -->
+            <property name="suppressDate" value="true"/>
+            <property name="addRemarkComments" value="true"></property>
+        </commentGenerator>
+
+        <jdbcConnection driverClass="com.mysql.cj.jdbc.Driver"
+                        connectionURL="jdbc:mysql://localhost:3306/qiwumind"
+                        userId="root" password="123456">
+            <!-- 关键属性：让 MySQL 返回表的注释 -->
+            <property name="useInformationSchema" value="true" />
+        </jdbcConnection>
+
+        <javaTypeResolver
+                type="org.mybatis.generator.internal.types.JavaTypeResolverDefaultImpl">
+            <!-- true：使用BigDecimal对应DECIMAL和 NUMERIC数据类型 false：默认, scale>0;length>18：使用BigDecimal;
+                scale=0;length[10,18]：使用Long； scale=0;length[5,9]：使用Integer； scale=0;length<5：使用Short； -->
+            <property name="forceBigDecimals" value="false"/>
+        </javaTypeResolver>
+        <javaModelGenerator targetPackage="com.qiwumind.admin.infra.repository.dataobject"
+                            targetProject="qiwumind-admin/src/main/java">
+            <property name="enableSubPackages" value="true"/>
+            <property name="trimStrings" value="true"/>
+        </javaModelGenerator>
+
+        <sqlMapGenerator targetPackage="mybatis"
+                         targetProject="qiwumind-admin/src/main/resources">
+            <property name="enableSubPackages" value="true"/>
+        </sqlMapGenerator>
+
+        <javaClientGenerator targetPackage="com.qiwumind.admin.infra.repository.mapper"
+                             targetProject="qiwumind-admin/src/main/java" type="XMLMAPPER">
+            <property name="enableSubPackages" value="true"/>
+        </javaClientGenerator>
+
+
+        <table tableName="as_sys_config" domainObjectName="SysConfigEntity"
+               enableDeleteByPrimaryKey="false" enableDeleteByExample="false"
+               enableInsert="true" enableSelectByPrimaryKey="true"
+               enableSelectByExample="false" enableUpdateByPrimaryKey="true"
+               enableCountByExample="false" enableUpdateByExample="false">
+        </table>
+        <table tableName="as_sys_dept" domainObjectName="SysDeptEntity"
+               enableDeleteByPrimaryKey="false" enableDeleteByExample="false"
+               enableInsert="true" enableSelectByPrimaryKey="true"
+               enableSelectByExample="false" enableUpdateByPrimaryKey="true"
+               enableCountByExample="false" enableUpdateByExample="false">
+        </table>
+        <table tableName="as_sys_dict" domainObjectName="SysDictEntity"
+               enableDeleteByPrimaryKey="false" enableDeleteByExample="false"
+               enableInsert="true" enableSelectByPrimaryKey="true"
+               enableSelectByExample="false" enableUpdateByPrimaryKey="true"
+               enableCountByExample="false" enableUpdateByExample="false">
+        </table>
+        <table tableName="as_sys_dict_item" domainObjectName="SysDictItemPO"
+               enableDeleteByPrimaryKey="false" enableDeleteByExample="false"
+               enableInsert="true" enableSelectByPrimaryKey="true"
+               enableSelectByExample="false" enableUpdateByPrimaryKey="true"
+               enableCountByExample="false" enableUpdateByExample="false">
+        </table>
+        <table tableName="as_sys_log" domainObjectName="SysLogPO"
+               enableDeleteByPrimaryKey="false" enableDeleteByExample="false"
+               enableInsert="true" enableSelectByPrimaryKey="true"
+               enableSelectByExample="false" enableUpdateByPrimaryKey="true"
+               enableCountByExample="false" enableUpdateByExample="false">
+        </table>
+        <table tableName="as_sys_menu" domainObjectName="SysMenuPO"
+               enableDeleteByPrimaryKey="false" enableDeleteByExample="false"
+               enableInsert="true" enableSelectByPrimaryKey="true"
+               enableSelectByExample="false" enableUpdateByPrimaryKey="true"
+               enableCountByExample="false" enableUpdateByExample="false">
+        </table>
+        <table tableName="as_sys_notice" domainObjectName="SysNoticePO"
+               enableDeleteByPrimaryKey="false" enableDeleteByExample="false"
+               enableInsert="true" enableSelectByPrimaryKey="true"
+               enableSelectByExample="false" enableUpdateByPrimaryKey="true"
+               enableCountByExample="false" enableUpdateByExample="false">
+        </table>
+        <table tableName="as_sys_role" domainObjectName="SysRolePO"
+               enableDeleteByPrimaryKey="false" enableDeleteByExample="false"
+               enableInsert="true" enableSelectByPrimaryKey="true"
+               enableSelectByExample="false" enableUpdateByPrimaryKey="true"
+               enableCountByExample="false" enableUpdateByExample="false">
+        </table>
+        <table tableName="as_sys_role_menu" domainObjectName="SysRoleMenuPO"
+               enableDeleteByPrimaryKey="false" enableDeleteByExample="false"
+               enableInsert="true" enableSelectByPrimaryKey="true"
+               enableSelectByExample="false" enableUpdateByPrimaryKey="true"
+               enableCountByExample="false" enableUpdateByExample="false">
+        </table>
+        <table tableName="as_sys_user" domainObjectName="SysUserPO"
+               enableDeleteByPrimaryKey="false" enableDeleteByExample="false"
+               enableInsert="true" enableSelectByPrimaryKey="true"
+               enableSelectByExample="false" enableUpdateByPrimaryKey="true"
+               enableCountByExample="false" enableUpdateByExample="false">
+        </table>
+        <table tableName="as_sys_user_notice" domainObjectName="SysUserNoticePO"
+               enableDeleteByPrimaryKey="false" enableDeleteByExample="false"
+               enableInsert="true" enableSelectByPrimaryKey="true"
+               enableSelectByExample="false" enableUpdateByPrimaryKey="true"
+               enableCountByExample="false" enableUpdateByExample="false">
+        </table>
+        <table tableName="as_sys_user_role" domainObjectName="SysUserRolePO"
+               enableDeleteByPrimaryKey="false" enableDeleteByExample="false"
+               enableInsert="true" enableSelectByPrimaryKey="true"
+               enableSelectByExample="false" enableUpdateByPrimaryKey="true"
+               enableCountByExample="false" enableUpdateByExample="false">
+        </table>
+
+
+    </context>
+
+</generatorConfiguration>

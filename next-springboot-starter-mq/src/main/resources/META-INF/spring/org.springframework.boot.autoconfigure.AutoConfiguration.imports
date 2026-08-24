@@ -1,0 +1,2 @@
+com.qiwumind.next.components.mq.redis.config.QiwumindRedisMQProducerAutoConfiguration
+com.qiwumind.next.components.mq.redis.config.QiwumindRedisMQConsumerAutoConfiguration

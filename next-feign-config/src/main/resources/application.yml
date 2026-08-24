@@ -1,0 +1,102 @@
+# ==================== Spring Boot 3.5.5 优化配置 ====================
+spring:
+  cloud:
+    loadbalancer:
+      # Spring Cloud LoadBalancer（替代Netflix Ribbon）
+      enabled: true
+      cache:
+        ttl: 35s
+        capacity: 256
+      # 不配置任何策略类，默认就是轮询（RoundRobin）
+      # 这是最简单且推荐的方式
+# ==================== 线程池优化（异步调用） ====================
+  task:
+    execution:
+      pool:
+        core-size: 8
+        max-size: 32
+        queue-capacity: 100
+        keep-alive: 60s
+      thread-name-prefix: feign-exec-
+# ==================== 重试与容灾配置 ====================
+# 使用Spring Retry（替代Ribbon重试）
+  retry:
+    max-attempts: 3
+    backoff:
+      initial-interval: 1000ms
+      multiplier: 1.5
+      max-interval: 5000ms
+# ==================== Feign 优化配置 ====================
+feign:
+  # 启用原生OKHttp（Spring Boot 3.x推荐）
+  okhttp:
+    enabled: true
+  httpclient:
+    enabled: false
+    # 连接池配置（仅对Apache HttpClient生效）
+    max-connections: 200 # 连接池连接最大闲置数，缺省值是 200
+    max-connections-per-route: 50 #每个路由的最大连接数 缺省值 50
+    time-to-live: 900 # 连接最大闲置时间，单位为秒，缺省值是 900秒（15分钟）
+    connection-timeout: 15000 # 连接超时，单位为毫秒，缺省值是 2000毫秒（2秒）
+  client:
+    config:
+      default:
+        # 超时配置（Feign级别，优先级高于Ribbon）
+        connectTimeout: 10000
+        readTimeout: 30000
+        loggerLevel: basic
+        # 解码404响应（默认false）
+        decode404: false
+        # ========== 重试器配置（补充） ==========
+        # 使用默认重试器（最多重试5次，间隔100ms）
+        # 注意：此配置会覆盖spring.retry的全局配置，仅对当前Feign客户端生效 重试器（默认不重试）
+        retryer: feign.Retryer.Default
+        # 自定义重试器示例：
+        # retryer: com.example.config.CustomRetryer
+        # 使用不重试的策略：
+        # retryer: feign.Retryer.NEVER_RETRY
+        # 请求拦截器
+        # requestInterceptors:
+        #   - com.example.interceptor.CustomRequestInterceptor
+        # 自定义解码器
+        # decoder: com.example.decoder.CustomErrorDecoder
+        # 自定义编码器
+        # encoder: com.example.encoder.CustomEncoder
+        # 契约配置（默认SpringMvcContract）
+        # contract: feign.Contract.Default
+  # 压缩配置（推荐开启，减少网络传输）
+  compression:
+    request:
+      enabled: true
+      mime-types: text/xml,application/xml,application/json
+      min-request-size: 2048
+    response:
+      enabled: true
+# ==================== 日志配置 ====================
+logging:
+  level:
+    # 开启Feign调试日志（配合loggerLevel: basic生效）
+    com.example.feign.client: DEBUG
+    # 开启HTTP请求/响应完整日志（需配合loggerLevel: FULL）
+    # com.example.feign.client: TRACE
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"
+
+# ==================== 监控与健康检查 ====================
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics
+  endpoint:
+    health:
+      show-details: always
+      # Feign健康检查
+      group:
+        feign:
+          include: ping
+  metrics:
+    export:
+      # 开启Feign指标采集
+      simple:
+        enabled: true

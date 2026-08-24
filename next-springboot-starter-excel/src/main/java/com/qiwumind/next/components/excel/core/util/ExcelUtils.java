@@ -1,0 +1,79 @@
+/*
+ * MIT License
+ *
+ * Copyright (c) 2026 qiwumind
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.  Author: liks
+ * Email: 307039176@qq.com
+ */
+
+package com.qiwumind.next.components.excel.core.util;
+
+import cn.idev.excel.FastExcelFactory;
+import cn.idev.excel.converters.longconverter.LongStringConverter;
+import com.qiwumind.next.components.common.util.http.HttpUtils;
+import com.qiwumind.next.components.excel.core.handler.ColumnWidthMatchStyleStrategy;
+import com.qiwumind.next.components.excel.core.handler.SelectSheetWriteHandler;
+import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.List;
+
+/**
+ * Excel 工具类
+ * @author qiwumind
+ */
+public class ExcelUtils {
+
+    /**
+     * 将列表以 Excel 响应给前端
+     * @param response  响应
+     * @param filename  文件名
+     * @param sheetName Excel sheet 名
+     * @param head      Excel head 头
+     * @param data      数据列表哦
+     * @param <T>       泛型，保证 head 和 data 类型的一致性
+     * @throws IOException 写入失败的情况
+     */
+    public static <T> void write(HttpServletResponse response, String filename, String sheetName,
+                                 Class<T> head, List<T> data) throws IOException {
+        // 输出 Excel
+        FastExcelFactory.write(response.getOutputStream(), head)
+                .autoCloseStream(false) // 不要自动关闭，交给 Servlet 自己处理
+                .registerWriteHandler(new ColumnWidthMatchStyleStrategy()) // 基于 column 长度，自动适配。最大 255 宽度
+                .registerWriteHandler(new SelectSheetWriteHandler(head)) // 基于固定 sheet 实现下拉框
+                .registerConverter(new LongStringConverter()) // 避免 Long 类型丢失精度
+                .sheet(sheetName).doWrite(data);
+        // 设置 header 和 contentType。写在最后的原因是，避免报错时，响应 contentType 已经被修改了
+        response.addHeader("Content-Disposition", "attachment;filename=" + HttpUtils.encodeUtf8(filename));
+        response.setContentType("application/vnd.ms-excel;charset=UTF-8");
+    }
+
+    public static <T> List<T> read(MultipartFile file, Class<T> head) throws IOException {
+        // 参考 https://t.zsxq.com/zM77F 帖子，增加 try 处理，兼容 windows 场景
+        try (InputStream inputStream = file.getInputStream()) {
+            return FastExcelFactory.read(inputStream, head, null)
+                    .autoCloseStream(false) // 不要自动关闭，交给 Servlet 自己处理
+                    .doReadAllSync();
+        }
+    }
+
+}

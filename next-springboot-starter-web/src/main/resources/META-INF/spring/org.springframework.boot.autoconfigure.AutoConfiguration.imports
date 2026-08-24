@@ -1,0 +1,7 @@
+com.qiwumind.next.components.apilog.config.QiwumindApiLogAutoConfiguration
+com.qiwumind.next.components.jackson.config.QiwumindJacksonAutoConfiguration
+com.qiwumind.next.components.swagger.config.QiwumindSwaggerAutoConfiguration
+com.qiwumind.next.components.web.config.QiwumindWebAutoConfiguration
+com.qiwumind.next.components.xss.config.QiwumindXssAutoConfiguration
+com.qiwumind.next.components.banner.config.QiwumindBannerAutoConfiguration
+com.qiwumind.next.components.encrypt.config.QiwumindApiEncryptAutoConfiguration

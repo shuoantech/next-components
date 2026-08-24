@@ -1,0 +1,108 @@
+{
+  "groups": [
+    {
+      "name": "pdf",
+      "type": "com.qiwumind.next.components.pdf.autoconfigure.PdfProperties",
+      "description": "PDF 生成器全局配置"
+    },
+    {
+      "name": "pdf.template",
+      "type": "com.qiwumind.next.components.pdf.autoconfigure.PdfProperties$Template",
+      "sourceType": "com.qiwumind.next.components.pdf.autoconfigure.PdfProperties",
+      "description": "FreeMarker 模板相关配置"
+    },
+    {
+      "name": "pdf.fonts",
+      "type": "com.qiwumind.next.components.pdf.autoconfigure.PdfProperties$Fonts",
+      "sourceType": "com.qiwumind.next.components.pdf.autoconfigure.PdfProperties",
+      "description": "字体相关配置"
+    },
+    {
+      "name": "pdf.export",
+      "type": "com.qiwumind.next.components.pdf.autoconfigure.PdfProperties$Export",
+      "sourceType": "com.qiwumind.next.components.pdf.autoconfigure.PdfProperties",
+      "description": "PDF 导出相关配置"
+    }
+  ],
+  "properties": [
+    {
+      "name": "pdf.enabled",
+      "type": "java.lang.Boolean",
+      "description": "是否启用 PDF 生成功能",
+      "defaultValue": true
+    },
+    {
+      "name": "pdf.template.encoding",
+      "type": "java.lang.String",
+      "description": "模板文件编码",
+      "defaultValue": "UTF-8"
+    },
+    {
+      "name": "pdf.template.cache",
+      "type": "java.lang.Boolean",
+      "description": "是否缓存模板（生产环境建议开启）",
+      "defaultValue": false
+    },
+    {
+      "name": "pdf.template.path",
+      "type": "java.lang.String",
+      "description": "模板加载路径（相对于 classpath）",
+      "defaultValue": "classpath:/templates/"
+    },
+    {
+      "name": "pdf.template.suffix",
+      "type": "java.lang.String",
+      "description": "模板文件后缀",
+      "defaultValue": ".ftl"
+    },
+    {
+      "name": "pdf.fonts.server-dir",
+      "type": "java.lang.String",
+      "description": "服务器字体目录，用于加载系统中文字体",
+      "defaultValue": "/opt/server/fonts"
+    },
+    {
+      "name": "pdf.fonts.classpath-dir",
+      "type": "java.lang.String",
+      "description": "classpath 字体资源目录",
+      "defaultValue": "fonts/"
+    },
+    {
+      "name": "pdf.export.debug-enabled",
+      "type": "java.lang.Boolean",
+      "description": "是否启用调试模式（保留中间 HTML 文件）",
+      "defaultValue": false
+    },
+    {
+      "name": "pdf.export.debug-dir",
+      "type": "java.lang.String",
+      "description": "调试输出目录",
+      "defaultValue": "java.io.tmpdir"
+    },
+    {
+      "name": "pdf.export.page-size",
+      "type": "java.lang.String",
+      "description": "PDF 默认页面大小",
+      "defaultValue": "A4"
+    },
+    {
+      "name": "pdf.export.dpi",
+      "type": "java.lang.Integer",
+      "description": "PDF 页面 DPI",
+      "defaultValue": 96
+    }
+  ],
+  "hints": [
+    {
+      "name": "pdf.fonts.custom",
+      "providers": [
+        {
+          "name": "handle-as",
+          "parameters": {
+            "target": "com.qiwumind.next.components.pdf.autoconfigure.PdfProperties$FontItem"
+          }
+        }
+      ]
+    }
+  ]
+}

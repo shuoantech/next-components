@@ -1,0 +1,168 @@
+<included>
+	<!-- 引入日志datasecure begin -->
+	<property scope="context" name="sensitiveDataAllowRun" value="true" />
+	<property scope="context" name="sensitiveDataKeys" value='[]' />
+	<property scope="context" name="sensitiveDataKeys1" value='[]' />
+	<property scope="context" name="sensitiveDataKeys2" value='[]' />
+	<property scope="context" name="sensitiveDataKeys3" value='[]' />
+	<property name="pattern_format"
+			  value="%d [%t] %-5p [%logger] [%F:%L] [trace=%X{traceId},span=%X{spanId}] - %msg%n" />
+	<conversionRule conversionWord="msg"
+					class="com.qiwumind.next.components.datasecure.logback.SensitiveDataConverter" />
+	<conversionRule conversionWord="ex"
+					class="com.qiwumind.next.components.datasecure.logback.SensitiveDataThrowableProxyConverter" />
+	<conversionRule conversionWord="exception"
+					class="com.qiwumind.next.components.datasecure.logback.SensitiveDataThrowableProxyConverter" />
+	<conversionRule conversionWord="throwable"
+					class="com.qiwumind.next.components.datasecure.logback.SensitiveDataThrowableProxyConverter" />
+
+	<!-- ✅ 生产环境启用脱敏 -->
+	<if condition='property("DEPLOY_ENV").equals("prd") || property("DEPLOY_ENV").equals("prod")'>
+		<then>
+			<property scope="context" name="sensitiveDataAllowRun" value="true" />
+		</then>
+	</if>
+
+
+	<!-- 控制台打印 -->
+	<appender name="STDOUT"
+			  class="ch.qos.logback.core.ConsoleAppender">
+		<target>System.out</target>
+		<encoder
+				class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+			<charset>UTF-8</charset>
+			<!-- <pattern>%d [%thread] %-5p [%c] [%F:%L] - %msg%n</pattern> -->
+			<pattern>${pattern_format}</pattern>
+		</encoder>
+	</appender>
+
+	<property name="logging.infoAppender.fileName"
+			  value="${app.name.monitor}-ss_micro_app_${app.name.monitor}_lt_info" />
+
+
+	<appender name="infoAppender"
+			  class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<file>${logging.path}/${logging.infoAppender.fileName}.log</file>
+		<rollingPolicy
+				class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<fileNamePattern>${logging.path}/${logging.infoAppender.fileName}-%d{yyyy-MM-dd}.log
+			</fileNamePattern>
+			<maxHistory>30</maxHistory>
+		</rollingPolicy>
+		<encoder
+				class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+			<charset>UTF-8</charset>
+			<!-- <pattern>%d [%thread] %-5p [%c] [%F:%L] [trace=%X{trace_id:-},span=%X{span_id:-}]
+				- %msg%n</pattern> -->
+			<pattern>${pattern_format}</pattern>
+		</encoder>
+	</appender>
+
+	<!-- 异步输出 infoAppender 的日志 -->
+	<!-- AsyncAppender并不处理日志，只是将日志缓冲到一个BlockingQueue里面去，并在内部创建一个工作线程从队列头部获取日志，之后将获取的日志
+		循环记录到附加的其他appender上去，从而达到不阻塞主线程的效果。因此AsyncAppender仅仅充当事件转发器，必须引用另一个appender来做事。 -->
+	<appender name="infoAppenderAsync"
+			  class="ch.qos.logback.classic.AsyncAppender">
+		<!-- 包含调用者信息,默认是false,官方提到如果开启会有性能上的损失,开启用于输出[%F:%L]等信息 -->
+		<includeCallerData>true</includeCallerData>
+		<!-- 不丢失日志.默认的,如果队列的80%已满,则会丢弃TRACT、DEBUG、INFO级别的日志 -->
+		<discardingThreshold>0</discardingThreshold>
+		<!-- 更改默认的队列的深度,该值会影响性能.默认值为256 -->
+		<queueSize>2048</queueSize>
+		<!-- 添加附加的appender,最多只能添加一个 -->
+		<appender-ref ref="infoAppender" />
+	</appender>
+
+	<property name="logging.errorAppender.fileName"
+			  value="${app.name.monitor}-ss_micro_app_${app.name.monitor}_lt_error" />
+	<appender name="errorAppender"
+			  class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<file>${logging.path}/${logging.errorAppender.fileName}.log</file>
+		<filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+			<level>ERROR</level>
+		</filter>
+		<rollingPolicy
+				class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<fileNamePattern>${logging.path}/${logging.errorAppender.fileName}-%d{yyyy-MM-dd}.log
+			</fileNamePattern>
+			<maxHistory>30</maxHistory>
+		</rollingPolicy>
+		<encoder
+				class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+			<charset>UTF-8</charset>
+			<!-- <pattern>%d [%thread] %-5p [%c] [%F:%L] [trace=%X{trace_id:-},span=%X{span_id:-}]
+				- %msg%n</pattern> -->
+			<pattern>${pattern_format}</pattern>
+		</encoder>
+	</appender>
+
+	<appender name="errorAppenderAsync"
+			  class="ch.qos.logback.classic.AsyncAppender">
+		<includeCallerData>true</includeCallerData>
+		<discardingThreshold>0</discardingThreshold>
+		<queueSize>2048</queueSize>
+		<appender-ref ref="errorAppender" />
+	</appender>
+
+	<logger name="ERROR_LOGGER" additivity="false" level="info">
+		<appender-ref ref="errorAppender" />
+	</logger>
+
+
+	<property name="logging.bizAppender.fileName"
+			  value="${app.name.monitor}-ss_micro_app_${app.name.monitor}_lt_biz" />
+
+	<appender name="bizAppender"
+			  class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<file>${logging.path}/${logging.bizAppender.fileName}.log</file>
+		<filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+			<level>INFO</level>
+		</filter>
+		<rollingPolicy
+				class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<fileNamePattern>${logging.path}/${logging.bizAppender.fileName}-%d{yyyy-MM-dd}.log
+			</fileNamePattern>
+			<maxHistory>30</maxHistory>
+		</rollingPolicy>
+		<encoder charset="UTF-8"
+				 class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+			<pattern>%msg%n</pattern>
+		</encoder>
+	</appender>
+
+	<logger name="BIZ_LOGGER" additivity="false" level="info">
+		<appender-ref ref="bizAppender" />
+	</logger>
+
+	<appender name="bizAppenderAsync"
+			  class="ch.qos.logback.classic.AsyncAppender">
+		<includeCallerData>true</includeCallerData>
+		<discardingThreshold>0</discardingThreshold>
+		<queueSize>2048</queueSize>
+		<appender-ref ref="bizAppender" />
+	</appender>
+
+
+	<logger name="org.apache" level="info">
+
+		<appender-ref ref="errorAppender" />
+		<appender-ref ref="infoAppender" />
+	</logger>
+
+	<logger name="org.springframework" level="info">
+
+		<appender-ref ref="errorAppender" />
+		<appender-ref ref="infoAppender" />
+	</logger>
+
+	<logger name="com.alibaba.nacos.client.naming" level="WARN"/>
+
+	<logger name="com.netflix" level="info">
+		<appender-ref ref="errorAppender" />
+		<appender-ref ref="infoAppender" />
+		<appender-ref ref="bizAppender" />
+	</logger>
+
+	<!-- 引入日志datasecure end -->
+
+</included>

@@ -1,0 +1,86 @@
+/*
+ * MIT License
+ *
+ * Copyright (c) 2026 qiwumind
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.  Author: liks
+ * Email: 307039176@qq.com
+ */
+
+package com.qiwumind.next.components.common.util.cache;
+
+import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheLoader;
+import com.google.common.cache.LoadingCache;
+
+import java.time.Duration;
+import java.util.concurrent.Executors;
+
+/**
+ * Cache 工具类
+ *
+ * @author 3070
+ */
+public class CacheUtils {
+
+    /**
+     * 异步刷新的 LoadingCache 最大缓存数量
+     *
+     * @see <a href="">本地缓存 CacheUtils 工具类建议</a>
+     */
+    private static final Integer CACHE_MAX_SIZE = 10000;
+
+    /**
+     * 构建异步刷新的 LoadingCache 对象
+     *
+     * 注意：如果你的缓存和 ThreadLocal 有关系，要么自己处理 ThreadLocal 的传递，要么使用 {@link #buildCache(Duration, CacheLoader)} 方法
+     *
+     * 或者简单理解：
+     * 1、和“人”相关的，使用 {@link #buildCache(Duration, CacheLoader)} 方法
+     * 2、和“全局”、“系统”相关的，使用当前缓存方法
+     *
+     * @param duration 过期时间
+     * @param loader  CacheLoader 对象
+     * @return LoadingCache 对象
+     */
+    public static <K, V> LoadingCache<K, V> buildAsyncReloadingCache(Duration duration, CacheLoader<K, V> loader) {
+        return CacheBuilder.newBuilder()
+                .maximumSize(CACHE_MAX_SIZE)
+                // 只阻塞当前数据加载线程，其他线程返回旧值
+                .refreshAfterWrite(duration)
+                // 通过 asyncReloading 实现全异步加载，包括 refreshAfterWrite 被阻塞的加载线程
+                .build(CacheLoader.asyncReloading(loader, Executors.newCachedThreadPool())); // TODO 芋艿：可能要思考下，未来要不要做成可配置
+    }
+
+    /**
+     * 构建同步刷新的 LoadingCache 对象
+     *
+     * @param duration 过期时间
+     * @param loader  CacheLoader 对象
+     * @return LoadingCache 对象
+     */
+    public static <K, V> LoadingCache<K, V> buildCache(Duration duration, CacheLoader<K, V> loader) {
+        return CacheBuilder.newBuilder()
+                .maximumSize(CACHE_MAX_SIZE)
+                // 只阻塞当前数据加载线程，其他线程返回旧值
+                .refreshAfterWrite(duration)
+                .build(loader);
+    }
+
+}
