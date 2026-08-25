@@ -1,28 +1,3 @@
-/*
- * MIT License
- *
- * Copyright (c) 2026 qiwumind
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in all
- * copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.  Author: liks
- * Email: 307039176@qq.com
- */
-
 package com.qiwumind.next.components.common.result;
 
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -42,6 +17,12 @@ public final class PageResult<T> implements Serializable {
     @Schema(description = "数据", requiredMode = Schema.RequiredMode.REQUIRED)
     private List<T> list;
 
+    @Schema(description = "当前页码", example = "1")
+    private Integer pageNo;
+
+    @Schema(description = "每页大小", example = "10")
+    private Integer pageSize;
+
     public PageResult() {
     }
 
@@ -50,9 +31,23 @@ public final class PageResult<T> implements Serializable {
         this.total = total;
     }
 
+    public PageResult(List<T> list, Long total, Integer pageNo, Integer pageSize) {
+        this.list = list;
+        this.total = total;
+        this.pageNo = pageNo;
+        this.pageSize = pageSize;
+    }
+
     public PageResult(Long total) {
         this.list = new ArrayList<>();
         this.total = total;
+    }
+
+    public PageResult(Long total, Integer pageNo, Integer pageSize) {
+        this.list = new ArrayList<>();
+        this.total = total;
+        this.pageNo = pageNo;
+        this.pageSize = pageSize;
     }
 
     public static <T> PageResult<T> empty() {
@@ -63,4 +58,7 @@ public final class PageResult<T> implements Serializable {
         return new PageResult<>(total);
     }
 
+    public static <T> PageResult<T> empty(Long total, Integer pageNo, Integer pageSize) {
+        return new PageResult<>(total, pageNo, pageSize);
+    }
 }

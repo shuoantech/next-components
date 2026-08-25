@@ -14,6 +14,19 @@
     <version>${revision}</version>
 
     <dependencies>
+        <dependency>
+            <groupId>org.apache.tika</groupId>
+            <artifactId>tika-core</artifactId> <!-- 文件客户端：文件类型的识别 -->
+        </dependency>
+        <!-- 文件客户端：解决阿里云、腾讯云、minio 等 S3 连接 -->
+        <dependency>
+            <groupId>software.amazon.awssdk</groupId>
+            <artifactId>s3</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.hibernate.validator</groupId>
+            <artifactId>hibernate-validator</artifactId>
+        </dependency>
 
         <dependency>
             <groupId>com.qiwumind</groupId>

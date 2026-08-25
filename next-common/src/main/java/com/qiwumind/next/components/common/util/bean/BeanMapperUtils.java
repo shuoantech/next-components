@@ -25,226 +25,488 @@
 
 package com.qiwumind.next.components.common.util.bean;
 
-
+import com.github.dozermapper.core.DozerBeanMapperBuilder;
+import com.github.dozermapper.core.Mapper;
+import com.qiwumind.next.components.common.result.PageResult;
+import org.apache.commons.collections4.CollectionUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.sql.Clob;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 import java.util.Map.Entry;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Pattern;
 
-import com.github.dozermapper.core.DozerBeanMapperBuilder;
-import com.github.dozermapper.core.Mapper;
-import org.apache.commons.collections4.CollectionUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 /**
- * 类BeanMapper.java的实现描述：
+ * Bean 映射工具类 - 性能优化版
+ * <p>
+ * 优化点：
+ * 1. Dozer Mapper 单例 + 懒加载
+ * 2. 批量转换预分配容量，减少扩容开销
+ * 3. 结果缓存（高频重复转换场景）
+ * 4. 分页转换支持完整分页参数
+ * 5. 类型安全转换方法
+ * 6. 缓存大小可根据场景调整
+ *
+ * @author liks
+ * @version 2.0
  */
 public class BeanMapperUtils {
-    private static Logger logger = LoggerFactory.getLogger(BeanMapperUtils.class);
-    private static Mapper dozer = DozerBeanMapperBuilder.create()
-            .build();
-//    private static DozerBeanMapper dozer = new DozerBeanMapper();
+
+    private static final Logger logger = LoggerFactory.getLogger(BeanMapperUtils.class);
 
     /**
-     * 构造新的destinationClass实例对象，通过source对象中的字段内容
-     * 映射到destinationClass实例对象中，并返回新的destinationClass实例对象。
-     *
-     * @param source           源数据对象
-     * @param destinationClass 要构造新的实例对象Class
-     * @return
+     * 是否启用缓存（默认启用，可通过 JVM 参数关闭）
+     */
+    private static final boolean ENABLE_CACHE = Boolean.parseBoolean(
+            System.getProperty("bean.mapper.cache.enabled", "true")
+    );
+
+    /**
+     * 缓存最大容量（默认 1000，可通过 JVM 参数调整）
+     * 建议值：
+     * - 小项目/低频: 200-500
+     * - 中项目/中频: 500-1000
+     * - 大项目/高频: 1000-2000
+     */
+    private static final int CACHE_MAX_SIZE = Integer.parseInt(
+            System.getProperty("bean.mapper.cache.max.size", "1000")
+    );
+
+    /**
+     * 转换结果缓存（线程安全）
+     * 使用 ConcurrentHashMap 保证高并发下的性能
+     */
+    private static final Map<String, Object> CONVERT_CACHE = new ConcurrentHashMap<>();
+
+    /**
+     * Dozer Mapper 单例（懒加载，线程安全）
+     */
+    private static final class DozerHolder {
+        static final Mapper INSTANCE = DozerBeanMapperBuilder.create().build();
+    }
+
+    private static Mapper getDozer() {
+        return DozerHolder.INSTANCE;
+    }
+
+    // ==================== 基础转换方法 ====================
+
+    /**
+     * 单个对象转换
      */
     public static <T> T map(Object source, Class<T> destinationClass) {
         if (source == null) {
             return null;
         }
-        return dozer.map(source, destinationClass);
+        return getDozer().map(source, destinationClass);
     }
 
     /**
-     * @param sourceList
-     * @param destinationClass
-     * @return
+     * 单个对象转换（带缓存）
+     */
+    public static <T> T map(Object source, Class<T> destinationClass, boolean useCache) {
+        if (source == null) {
+            return null;
+        }
+
+        if (useCache && ENABLE_CACHE) {
+            String cacheKey = buildCacheKey(source, destinationClass);
+            @SuppressWarnings("unchecked")
+            T cached = (T) CONVERT_CACHE.get(cacheKey);
+            if (cached != null) {
+                return cached;
+            }
+        }
+
+        T result = getDozer().map(source, destinationClass);
+
+        if (useCache && ENABLE_CACHE && result != null) {
+            String cacheKey = buildCacheKey(source, destinationClass);
+            if (CONVERT_CACHE.size() < CACHE_MAX_SIZE) {
+                CONVERT_CACHE.put(cacheKey, result);
+            } else {
+                // 缓存满时清理一半
+                trimCache();
+            }
+        }
+
+        return result;
+    }
+
+    /**
+     * 列表转换（批量优化）
      */
     public static <T> List<T> mapList(Collection<?> sourceList, Class<T> destinationClass) {
-        final List<T> destinationList = new ArrayList<>();
         if (CollectionUtils.isEmpty(sourceList)) {
-            return destinationList;
+            return new ArrayList<>();
         }
-        for (final Iterator<?> i$ = sourceList.iterator(); i$.hasNext(); ) {
-            final Object sourceObject = i$.next();
-            final T destinationObject = dozer.map(sourceObject, destinationClass);
-            destinationList.add(destinationObject);
+
+        List<T> destinationList = new ArrayList<>(sourceList.size());
+        Mapper mapper = getDozer();
+
+        for (Object sourceObject : sourceList) {
+            if (sourceObject == null) {
+                destinationList.add(null);
+                continue;
+            }
+            destinationList.add(mapper.map(sourceObject, destinationClass));
         }
+
         return destinationList;
     }
-//
-//    private static Map<String, Object> getBeanPropertyAndChangeIntoMap(final Object obj,
-//                                                                       final Class<? extends Object> abClass) {
-//        final Map<String, Object> dataMap = new HashMap<String, Object>();
-//        Class<?> clazz = obj.getClass();
-//        int length = 0;
-//        Field[] arrayFields = new Field[length];
-//        for (; clazz != Object.class; clazz = clazz.getSuperclass()) {
-//            try {
-//                final Field[] arrayField = clazz.getDeclaredFields();
-//                length += arrayField.length;
-//                final Field[] tmp = new Field[length];
-//                // src:源数组; srcPos:源数组要复制的起始位置;dest:目的数组; destPos:目的数组放置的起始位置;
-//                // length:复制的长度
-//                System.arraycopy(arrayField, 0, tmp, 0, arrayField.length);
-//                System.arraycopy(arrayFields, 0, tmp, arrayFields.length, arrayFields.length);
-//                arrayFields = tmp;
-//            } catch (final Exception e) {
-//                // 这里甚么都不要做！并且这里的异常必须这样写，不能抛出去。
-//                // 如果这里的异常打印或者往外抛，则就不会执行clazz =
-//                // clazz.getSuperclass(),最后就不会进入到父类中了
-//            }
-//        }
-//        for (int i = 0; i < arrayFields.length; i++) {
-//            final Field field = arrayFields[i];
-//            try {
-//                field.setAccessible(true);
-//                Object value = field.get(obj);
-//                if (value == null) {
-//                    continue;
-//                }
-//                if (value instanceof BaseDTO) {
-//                    value = bean2Map(obj);
-//                }
-//                //                else if (value instanceof List) {
-//                //                    value = beanList2MapList((List) value);
-//                //                }
-//                String name = field.getName();
-//                // 此处需屏蔽掉Mybatis自动生成的bean中附带的 以 CGLIB 为开头包含'$'的属性
-//                if (name.indexOf('$') == -1) {
-//                    name = (abClass == BaseDTO.class ? name : convertUpper(name));
-//                    dataMap.put(name, value);
-//                }
-//                dataMap.put(name, value);
-//            } catch (final Exception e) {
-//            }
-//        }
-//        return dataMap;
-//    }
 
     /**
-     * @param obj
-     * @return
+     * 列表转换（带缓存）
      */
-//    public static Map<String, Object> bean2Map(final Object obj) {
-//        if (obj == null) {
-//            return null;
-//        }
-//        final Map<String, Object> dataMap = new HashMap<String, Object>();
-//        dataMap.putAll(getBeanPropertyAndChangeIntoMap(obj, null));
-//        return dataMap;
-//    }
+    public static <T> List<T> mapList(Collection<?> sourceList, Class<T> destinationClass, boolean useCache) {
+        if (CollectionUtils.isEmpty(sourceList)) {
+            return new ArrayList<>();
+        }
+
+        // 如果缓存未启用或容量为0，直接转换
+        if (!ENABLE_CACHE || CACHE_MAX_SIZE <= 0) {
+            return mapList(sourceList, destinationClass);
+        }
+
+        List<T> destinationList = new ArrayList<>(sourceList.size());
+        Mapper mapper = getDozer();
+
+        for (Object sourceObject : sourceList) {
+            if (sourceObject == null) {
+                destinationList.add(null);
+                continue;
+            }
+
+            T result;
+            if (useCache) {
+                String cacheKey = buildCacheKey(sourceObject, destinationClass);
+                @SuppressWarnings("unchecked")
+                T cached = (T) CONVERT_CACHE.get(cacheKey);
+                if (cached != null) {
+                    destinationList.add(cached);
+                    continue;
+                }
+                result = mapper.map(sourceObject, destinationClass);
+                if (result != null && CONVERT_CACHE.size() < CACHE_MAX_SIZE) {
+                    CONVERT_CACHE.put(cacheKey, result);
+                }
+            } else {
+                result = mapper.map(sourceObject, destinationClass);
+            }
+
+            destinationList.add(result);
+        }
+
+        if (CONVERT_CACHE.size() >= CACHE_MAX_SIZE) {
+            trimCache();
+        }
+
+        return destinationList;
+    }
 
     /**
-     * @param beanList
-     * @return
+     * 数组转换
      */
-//    public static List<Map<String, Object>> beanList2MapList(final List<?> beanList) {
-//        final List<Map<String, Object>> rsplist = new ArrayList<Map<String, Object>>();
-//        for (final Object bean : beanList) {
-//            rsplist.add(bean2Map(bean));
-//        }
-//        return rsplist;
-//    }
+    public static <T> List<T> mapArray(Object[] sourceArray, Class<T> destinationClass) {
+        if (sourceArray == null || sourceArray.length == 0) {
+            return new ArrayList<>();
+        }
+        return mapList(Arrays.asList(sourceArray), destinationClass);
+    }
+
+    // ==================== 分页转换方法 ====================
 
     /**
-     * 不支持嵌套对象
-     *
-     * @return
+     * 分页结果转换（完整分页信息）
      */
-//    public static <T> T map2Bean(final Map<String, Object> map, final Class<T> clazz) {
-//        if (map == null) {
-//            return null;
-//        }
-//        T bean = null;
-//        try {
-//            bean = clazz.newInstance();
-//            final Iterator<Entry<String, Object>> iterator = map.entrySet().iterator();
-//            while (iterator.hasNext()) {
-//                final Entry<String, Object> entry = iterator.next();
-//                if (entry.getValue() != null) {
-//                    final Method method = getSetMethodOfEntry(entry, clazz);
-//                    if (method == null) {
-//                        logger.debug("have not found the set method of " + entry.getKey() + "("
-//                                + entry.getValue().getClass().toString() + ")");
-//                    } else {
-//                        Object obj = entry.getValue();
-//                        if (obj instanceof BaseDTO) {
-//                            obj = map2Bean(map, obj.getClass());
-//                        }
-//                        //                        else if (obj instanceof List) {
-//                        //                            obj = new ArrayList<Map<String, Object>>((List) obj);
-//                        //                        }
-//                        method.invoke(bean, obj);
-//                    }
-//                }
-//            }
-//        } catch (final InstantiationException e) {
-//            logger.error("...产生实例化错误", e);
-//        } catch (final IllegalAccessException e) {
-//            logger.error("" + e);
-//        } catch (final IllegalArgumentException e) {
-//            logger.error("" + e);
-//        } catch (final InvocationTargetException e) {
-//            logger.error("" + e);
-//        }
-//        return bean;
-//    }
-//
-//    /**
-//     * 将 Map对象转化为JavaBean 此方法已经测试通过
-//     *
-//     * @author wyply115
-//     * @param type 要转化的类型
-//     * @param map
-//     * @return Object对象
-//     * @version 2016年3月20日 11:03:01
-//     */
-//    public static <T> T convertMap2Bean(final Map<String, Object> map, final Class<T> clazz) {
-//        if (map == null || map.size() == 0) {
-//            return null;
-//        }
-//        T bean = null;
-//        try {
-//            bean = clazz.newInstance();
-//            org.apache.commons.beanutils.BeanUtils.populate(bean, map);
-//        } catch (InstantiationException | IllegalAccessException e1) {
-//        } catch (final InvocationTargetException e) {
-//        }
-//        return bean;
-//    }
-//
-//    /**
-//     * 将 List<Map>对象转化为List<JavaBean>
-//     *
-//     * @param maplist
-//     * @param clazz
-//     * @return
-//     */
-//    public static <T> List<T> mapList2BeanList(final List<Map<String, Object>> maplist, final Class<T> clazz) {
-//        final List<T> rspList = new ArrayList<T>();
-//        if (CollectionUtils.isEmpty(maplist)) {
-//            return rspList;
-//        }
-//        for (final Map<String, Object> entry : maplist) {
-//            rspList.add(map2Bean(entry, clazz));
-//        }
-//        return rspList;
-//    }
+    public static <S, T> PageResult<T> mapPage(PageResult<S> page, Class<T> destinationClass) {
+        if (page == null) {
+            return null;
+        }
+
+        PageResult<T> result = new PageResult<>();
+        result.setTotal(page.getTotal());
+        result.setPageNo(page.getPageNo());
+        result.setPageSize(page.getPageSize());
+
+        List<S> sourceList = page.getList();
+        if (CollectionUtils.isNotEmpty(sourceList)) {
+            result.setList(mapList(sourceList, destinationClass));
+        } else {
+            result.setList(new ArrayList<>());
+        }
+
+        return result;
+    }
+
+    /**
+     * 分页结果转换（手动构建）
+     */
+    public static <S, T> PageResult<T> mapPage(Collection<S> sourceList, Class<T> destinationClass,
+                                               long total, int pageNo, int pageSize) {
+        PageResult<T> result = new PageResult<>();
+        result.setTotal(total);
+        result.setPageNo(pageNo);
+        result.setPageSize(pageSize);
+        result.setList(mapList(sourceList, destinationClass));
+        return result;
+    }
+
+    /**
+     * 分页结果转换（复用分页信息）
+     */
+    public static <S, T> PageResult<T> mapPage(Collection<S> sourceList, Class<T> destinationClass,
+                                               PageResult<?> page) {
+        PageResult<T> result = new PageResult<>();
+
+        if (page != null) {
+            result.setTotal(page.getTotal());
+            result.setPageNo(page.getPageNo());
+            result.setPageSize(page.getPageSize());
+        } else {
+            result.setTotal(0L);
+            result.setPageNo(1);
+            result.setPageSize(10);
+        }
+
+        result.setList(mapList(sourceList, destinationClass));
+        return result;
+    }
+
+    /**
+     * 分页结果转换（只转换列表，不含分页参数）
+     */
+    public static <S, T> PageResult<T> mapPageSimple(Collection<S> sourceList, Class<T> destinationClass, Long total) {
+        PageResult<T> result = new PageResult<>();
+        result.setTotal(total != null ? total : 0L);
+        result.setList(mapList(sourceList, destinationClass));
+        return result;
+    }
+
+    // ==================== 缓存管理 ====================
+
+    private static String buildCacheKey(Object source, Class<?> destinationClass) {
+        return source.getClass().getName() + "_" + destinationClass.getName() + "_" + source.hashCode();
+    }
+
+    /**
+     * 清理缓存（清理一半）
+     */
+    private static void trimCache() {
+        if (CONVERT_CACHE.size() < CACHE_MAX_SIZE) {
+            return;
+        }
+        logger.warn("转换缓存已满(当前:{}/{}), 执行清理...", CONVERT_CACHE.size(), CACHE_MAX_SIZE);
+
+        // 清理一半的缓存
+        List<String> keysToRemove = new ArrayList<>();
+        int removeCount = 0;
+        int targetRemove = Math.max(CACHE_MAX_SIZE / 2, 1);
+
+        for (String key : CONVERT_CACHE.keySet()) {
+            keysToRemove.add(key);
+            removeCount++;
+            if (removeCount >= targetRemove) {
+                break;
+            }
+        }
+        for (String key : keysToRemove) {
+            CONVERT_CACHE.remove(key);
+        }
+        logger.info("缓存清理完成，当前大小: {}/{}", CONVERT_CACHE.size(), CACHE_MAX_SIZE);
+    }
+
+    /**
+     * 清空所有缓存
+     */
+    public static void clearCache() {
+        CONVERT_CACHE.clear();
+        logger.info("转换缓存已清空");
+    }
+
+    /**
+     * 获取缓存大小
+     */
+    public static int getCacheSize() {
+        return CONVERT_CACHE.size();
+    }
+
+    /**
+     * 获取缓存最大容量
+     */
+    public static int getCacheMaxSize() {
+        return CACHE_MAX_SIZE;
+    }
+
+    /**
+     * 是否启用缓存
+     */
+    public static boolean isCacheEnabled() {
+        return ENABLE_CACHE && CACHE_MAX_SIZE > 0;
+    }
+
+    /**
+     * 获取缓存命中率统计（简易）
+     */
+    public static double getCacheHitRate() {
+        // 由于 ConcurrentHashMap 不提供命中统计，这里只是一个示意
+        // 实际可通过 AOP 或包装 Map 实现
+        return 0.0;
+    }
+
+    // ==================== 快捷方法 ====================
+
+    /**
+     * 创建空分页结果
+     */
+    public static <T> PageResult<T> emptyPage() {
+        return PageResult.empty();
+    }
+
+    /**
+     * 创建空分页结果（指定总数）
+     */
+    public static <T> PageResult<T> emptyPage(Long total) {
+        return PageResult.empty(total);
+    }
+
+    /**
+     * 创建空分页结果（指定总数和分页参数）
+     */
+    public static <T> PageResult<T> emptyPage(Long total, Integer pageNo, Integer pageSize) {
+        return PageResult.empty(total, pageNo, pageSize);
+    }
+
+    /**
+     * 深拷贝对象
+     */
+    public static <T> T deepCopy(Object source, Class<T> destinationClass) {
+        if (source == null) {
+            return null;
+        }
+        return getDozer().map(source, destinationClass);
+    }
+
+    /**
+     * 批量深拷贝
+     */
+    public static <T> List<T> deepCopyList(Collection<?> sourceList, Class<T> destinationClass) {
+        return mapList(sourceList, destinationClass);
+    }
+
+    // ==================== 类型安全转换工具 ====================
+
+    /**
+     * 安全转换为字符串
+     */
+    public static String toString(Object obj) {
+        if (obj == null) {
+            return null;
+        }
+        if (obj instanceof String) {
+            return (String) obj;
+        }
+        if (obj instanceof Clob) {
+            try {
+                Clob clob = (Clob) obj;
+                return clob.getSubString(1, (int) clob.length());
+            } catch (SQLException e) {
+                logger.error("Clob 转 String 失败", e);
+                return null;
+            }
+        }
+        return obj.toString();
+    }
+
+    /**
+     * 安全转换为 Long
+     */
+    public static Long toLong(Object obj) {
+        if (obj == null) {
+            return null;
+        }
+        if (obj instanceof Number) {
+            return ((Number) obj).longValue();
+        }
+        if (obj instanceof String) {
+            try {
+                return Long.valueOf((String) obj);
+            } catch (NumberFormatException e) {
+                return null;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * 安全转换为 Integer
+     */
+    public static Integer toInteger(Object obj) {
+        if (obj == null) {
+            return null;
+        }
+        if (obj instanceof Number) {
+            return ((Number) obj).intValue();
+        }
+        if (obj instanceof String) {
+            try {
+                return Integer.valueOf((String) obj);
+            } catch (NumberFormatException e) {
+                return null;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * 安全转换为 BigDecimal
+     */
+    public static BigDecimal toBigDecimal(Object obj) {
+        if (obj == null) {
+            return null;
+        }
+        if (obj instanceof BigDecimal) {
+            return (BigDecimal) obj;
+        }
+        if (obj instanceof Number) {
+            return BigDecimal.valueOf(((Number) obj).doubleValue());
+        }
+        if (obj instanceof String) {
+            try {
+                return new BigDecimal((String) obj);
+            } catch (NumberFormatException e) {
+                return null;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * 安全转换为 Boolean
+     */
+    public static Boolean toBoolean(Object obj) {
+        if (obj == null) {
+            return null;
+        }
+        if (obj instanceof Boolean) {
+            return (Boolean) obj;
+        }
+        if (obj instanceof String) {
+            return Boolean.valueOf((String) obj);
+        }
+        if (obj instanceof Number) {
+            return ((Number) obj).intValue() != 0;
+        }
+        return null;
+    }
+
+    // ==================== 私有方法（保留原有功能） ====================
+
     private static Method getSetMethodOfEntry(final Entry<String, Object> entry, final Class<?> clazz) {
         final String property = convertLower(entry.getKey());
         final StringBuilder methodName = new StringBuilder("set");
@@ -267,15 +529,6 @@ public class BeanMapperUtils {
         }
     }
 
-    /**
-     * 获取一般类类型的set函数
-     *
-     * @param methodName
-     * @param clazz
-     * @param entry
-     * @return
-     * @throws NoSuchMethodException
-     */
     private static Method getNormalTypeMethod(final String methodName, final Class<?> clazz,
                                               final Entry<String, Object> entry)
             throws NoSuchMethodException {
@@ -349,13 +602,6 @@ public class BeanMapperUtils {
         return clazz.getMethod(methodName, type);
     }
 
-    /**
-     * 获取封装类参数的基本类
-     *
-     * @param obj
-     * @return
-     */
-
     private static Class<?> getParameterTye(final Object obj) {
         if (obj instanceof Integer) {
             return Integer.TYPE;
@@ -378,13 +624,8 @@ public class BeanMapperUtils {
         } else {
             return obj.getClass();
         }
-
     }
 
-    /**
-     * @param str
-     * @return
-     */
     public static String convertUpper(final String str) {
         final StringBuffer buffer = new StringBuffer();
         final String regEx = "[A-Z]";
@@ -400,10 +641,6 @@ public class BeanMapperUtils {
         return buffer.toString();
     }
 
-    /**
-     * @param str
-     * @return
-     */
     public static String convertLower(final String str) {
         final StringBuffer buffer = new StringBuffer();
         final String regEx = "_";
