@@ -27,6 +27,7 @@ package com.qiwumind.next.components.wechat.core.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
+import lombok.experimental.Accessors;
 
 /**
  * 微信JSAPI支付参数DTO
@@ -34,37 +35,35 @@ import lombok.*;
 @Setter
 @Getter
 @ToString
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
+@Accessors(chain = true)
 public class WxJsapiPayParams {
-    
+
     /**
      * 公众号APPID
      */
     private String appId;
-    
+
     /**
      * 时间戳（秒级）
      */
-    private String timeStamp= String.valueOf(System.currentTimeMillis() / 1000);
-    
+    private String timeStamp = String.valueOf(System.currentTimeMillis() / 1000);
+
     /**
      * 随机字符串
      */
     private String nonceStr;
-    
+
     /**
      * 订单详情扩展字符串（prepay_id=xxx）
      */
     @JsonProperty("package")
     private String packageStr;
-    
+
     /**
      * 签名类型（MD5）
      */
-    private String signType= "MD5";
-    
+    private String signType = "MD5";
+
     /**
      * 支付签名
      */

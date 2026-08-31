@@ -33,6 +33,7 @@ import com.google.common.collect.Multimap;
 import jakarta.annotation.Resource;
 import jakarta.annotation.security.PermitAll;
 import jakarta.servlet.DispatcherType;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.AutoConfigureOrder;
 import org.springframework.context.ApplicationContext;
@@ -56,6 +57,7 @@ import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
 import org.springframework.web.util.pattern.PathPattern;
 
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -95,10 +97,16 @@ public class QiwumindWebSecurityConfigurerAdapter {
 
     /**
      * 自定义的权限映射 Bean 们
+     * <p>
+     * 注意：这是「可选」扩展点。业务项目没有任何 AuthorizeRequestsCustomizer 实现时也必须能启动，
+     * 因此这里用 required = false 的集合注入：找不到候选 Bean 时保持空列表，
+     * 避免 Spring 退化成按 java.util.List 类型找 Bean 而报
+     * "A component required a bean of type 'java.util.List' that could not be found"。
+     *
      * @see #filterChain(HttpSecurity)
      */
-    @Resource
-    private List<AuthorizeRequestsCustomizer> authorizeRequestsCustomizers;
+    @Autowired(required = false)
+    private List<AuthorizeRequestsCustomizer> authorizeRequestsCustomizers = Collections.emptyList();
 
     @Resource
     private ApplicationContext applicationContext;

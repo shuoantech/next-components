@@ -23,4 +23,32 @@
  * Email: 307039176@qq.com
  */
 
-package com.qiwumind.next.components.operatelog;
+package com.qiwumind.next.components.datapermission.config;
+
+import com.qiwumind.next.components.common.constant.SystemConstants;
+import lombok.Data;
+import org.springframework.boot.context.properties.ConfigurationProperties;
+
+/**
+ * 数据权限的配置项
+ * <p>
+ * 数据权限是「可选」能力，业务项目可以按需配置：
+ * 1. 完全不需要：设置 next.data-permission.enabled=false，或者干脆不注册任何 DataPermissionRule
+ * 2. 只需要部分表：注册 {@link com.qiwumind.next.components.datapermission.core.rule.dept.DeptDataPermissionRuleCustomizer}
+ * 只声明需要过滤的表
+ *
+ * @author qiwumind
+ */
+@ConfigurationProperties(prefix = SystemConstants.Prefix.DATA_PERMISSION)
+@Data
+public class DataPermissionProperties {
+
+    /**
+     * 数据权限总开关
+     * <p>
+     * 关闭后，不会向 MyBatis Plus 注册数据权限拦截器，SQL 不做任何改写，
+     * 也不会创建 DataPermissionRuleFactory / DataPermissionAnnotationAdvisor 等 Bean。
+     */
+    private Boolean enabled = true;
+
+}

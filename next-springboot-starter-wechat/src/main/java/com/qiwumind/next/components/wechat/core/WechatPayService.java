@@ -174,13 +174,12 @@ public class WechatPayService {
         String packageStr = "prepay_id=" + prepayId;
         String signType = "MD5";
 
-        WxJsapiPayParams jsapiPayParams = WxJsapiPayParams.builder()
-                .appId(wxPayConfig.getAppId())
-                .timeStamp(timeStamp)
-                .nonceStr(nonceStr)
-                .packageStr(packageStr)
-                .signType(signType)
-                .build();
+        WxJsapiPayParams jsapiPayParams = new WxJsapiPayParams()
+                .setAppId(wxPayConfig.getAppId())
+                .setTimeStamp(timeStamp)
+                .setNonceStr(nonceStr)
+                .setPackageStr(packageStr)
+                .setSignType(signType);
 
         String paySign = generatePaySign(jsapiPayParams);
         jsapiPayParams.setPaySign(paySign);

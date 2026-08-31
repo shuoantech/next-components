@@ -17,12 +17,10 @@
 					class="com.qiwumind.next.components.datasecure.logback.SensitiveDataThrowableProxyConverter" />
 
 	<!-- ✅ 生产环境启用脱敏 -->
-	<if condition='property("DEPLOY_ENV").equals("prd") || property("DEPLOY_ENV").equals("prod")'>
-		<then>
-			<property scope="context" name="sensitiveDataAllowRun" value="true" />
-		</then>
-	</if>
-
+	<!-- 使用 Spring Profile 替代 Logback 条件判断 -->
+	<springProfile name="prd,prod">
+		<property scope="context" name="sensitiveDataAllowRun" value="true" />
+	</springProfile>
 
 	<!-- 控制台打印 -->
 	<appender name="STDOUT"

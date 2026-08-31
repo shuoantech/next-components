@@ -125,6 +125,13 @@
                         <compilerArgs>
                             <arg>-parameters</arg>
                         </compilerArgs>
+                        <!-- 禁用增量编译：规避 JDK21 下 maven-compiler-plugin 3.14 的增量重编译
+                             与 maven-jar-plugin 配合时打出空 jar 的隐患（reactor 中因依赖变化触发
+                             增量重编译会清空 target/classes 而 jar 读到空包），下游项目表现为
+                             "The import com.qiwumind.next.components.xxx cannot be resolved"。
+                             等价于每次全量编译，与 `mvn clean install` 行为一致，保证各模块产物完整。
+                             与 sa-manager 侧的处理保持一致。 -->
+                        <useIncrementalCompilation>false</useIncrementalCompilation>
                     </configuration>
                 </plugin>
                 <!-- ProGuard混淆插件 -->
@@ -166,6 +173,21 @@
                             <!-- 具体的混淆配置可在此处或外部配置文件中定义 -->
                         </options>
                     </configuration>
+                </plugin>
+                <!-- maven-jar-plugin：升级到现代版本（默认 2.4 为 2014 年老版本，
+                     在 JDK21 + 增量编译产物下存在打出空 jar 的隐患），与 JDK21 / compiler 3.14 匹配 -->
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-jar-plugin</artifactId>
+                    <version>3.4.1</version>
+                </plugin>
+                <!-- maven-clean-plugin：升级到现代版本（默认 2.5 为 2014 年老版本，
+                     在 macOS/JDK21 下删除 target 时遇到被 IDE 索引进程锁定的文件会直接失败，
+                     3.x 对删除失败有重试机制，更健壮） -->
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-clean-plugin</artifactId>
+                    <version>3.5.0</version>
                 </plugin>
             </plugins>
         </pluginManagement>

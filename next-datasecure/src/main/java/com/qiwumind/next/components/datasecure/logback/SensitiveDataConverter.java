@@ -139,13 +139,24 @@ public class SensitiveDataConverter extends MessageConverter {
     private static int getValueStartIndex(CharSequence msg, int valueStart) {
         // 寻找值的开始位置
         do {
+            // 边界保护：key 后面没有 key/value 分隔符（如 URL 中的 get-id-by-name 被误判为敏感 key），
+            // 扫描到消息末尾仍未找到时直接返回 msg.length()，避免 charAt 越界
+            if (valueStart >= msg.length()) {
+                break;
+            }
             char c = msg.charAt(valueStart);
             if (c == ':' || c == '=' || c == '：') {
                 // key与 value的分隔符
                 valueStart++;
+                if (valueStart >= msg.length()) {
+                    break;
+                }
                 c = msg.charAt(valueStart);
                 if (c == '"' || c == ' ') {
                     valueStart++;
+                    if (valueStart >= msg.length()) {
+                        break;
+                    }
                     c = msg.charAt(valueStart);
                     if (c == '"' || c == ' ') {
                         valueStart++;

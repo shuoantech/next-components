@@ -32,7 +32,7 @@ import java.util.concurrent.TimeUnit;
 
 /**
  * HTTP API 签名 Redis DAO
- * @author qiwumind Zhougang
+ * @author qiwumind
  */
 @AllArgsConstructor
 public class ApiSignatureRedisDAO {

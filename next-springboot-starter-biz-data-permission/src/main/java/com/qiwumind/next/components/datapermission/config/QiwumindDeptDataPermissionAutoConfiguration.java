@@ -26,23 +26,32 @@
 package com.qiwumind.next.components.datapermission.config;
 
 import com.qiwumind.next.components.common.api.system.permission.PermissionCommonApi;
+import com.qiwumind.next.components.common.constant.SystemConstants;
 import com.qiwumind.next.components.datapermission.core.rule.dept.DeptDataPermissionRule;
 import com.qiwumind.next.components.datapermission.core.rule.dept.DeptDataPermissionRuleCustomizer;
 import com.qiwumind.next.components.security.core.LoginUser;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 
 import java.util.List;
 
 /**
  * 基于部门的数据权限 AutoConfiguration
+ * <p>
+ * 该规则是「按需生效」的：只有当业务项目注册了 {@link DeptDataPermissionRuleCustomizer} Bean
+ * （即声明了哪些表需要做部门数据过滤）时，才会创建 DeptDataPermissionRule。
+ * 不想用部门数据权限，不写这个 Bean 即可。
+ *
  * @author qiwumind
  */
 @AutoConfiguration
 @ConditionalOnClass(LoginUser.class)
 @ConditionalOnBean(value = {DeptDataPermissionRuleCustomizer.class})
+@ConditionalOnProperty(prefix = SystemConstants.Prefix.DATA_PERMISSION, name = "enabled",
+        havingValue = "true", matchIfMissing = true)
 public class QiwumindDeptDataPermissionAutoConfiguration {
 
     @Bean

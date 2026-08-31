@@ -38,6 +38,7 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.springdoc.core.customizers.GlobalOpenApiCustomizer;
 import org.springdoc.core.properties.SpringDocConfigProperties;
 import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.ClassPathScanningCandidateComponentProvider;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
@@ -59,6 +60,13 @@ import java.util.stream.Collectors;
 @Primary
 @Configuration
 @Slf4j
+// 必须与 knife4j 官方 Knife4jAutoConfiguration 的生效条件保持一致：
+// 它上面是 @ConditionalOnProperty(name = "knife4j.enable", havingValue = "true")，
+// 且【没有】matchIfMissing = true —— 不显式配置 knife4j.enable=true，Knife4jAutoConfiguration 就不生效，
+// 其 @EnableConfigurationProperties 注册的 Knife4jProperties Bean 也不会存在。
+// 本类构造器第一个参数就是 Knife4jProperties，若不对齐条件，一旦 knife4j.enable 未配置（如 prod 环境）
+// 就会报 "required a bean of type 'Knife4jProperties' that could not be found" 导致启动失败。
+@ConditionalOnProperty(name = "knife4j.enable", havingValue = "true")
 public class Knife4jOpenApiCustomizer extends com.github.xiaoymin.knife4j.spring.extension.Knife4jOpenApiCustomizer
         implements GlobalOpenApiCustomizer {
 

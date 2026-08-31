@@ -25,6 +25,7 @@
 
 package com.qiwumind.next.components.datapermission.config;
 
+import com.qiwumind.next.components.common.constant.SystemConstants;
 import com.qiwumind.next.components.datapermission.core.aop.DataPermissionAnnotationAdvisor;
 import com.qiwumind.next.components.datapermission.core.db.DataPermissionRuleHandler;
 import com.qiwumind.next.components.datapermission.core.rule.DataPermissionRule;
@@ -33,21 +34,34 @@ import com.qiwumind.next.components.datapermission.core.rule.DataPermissionRuleF
 import com.qiwumind.next.components.mybatis.core.util.MyBatisUtils;
 import com.baomidou.mybatisplus.extension.plugins.MybatisPlusInterceptor;
 import com.baomidou.mybatisplus.extension.plugins.inner.DataPermissionInterceptor;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
-
-import java.util.List;
 
 /**
  * 数据权限的自动配置类
+ * <p>
+ * 数据权限是「可选」能力，业务项目不一定都要配置。这里提供两级按需开关：
+ * 1. 总开关：next.data-permission.enabled=false，则整个数据权限不生效（不注册任何相关 Bean）
+ * 2. 规则可选：一个 DataPermissionRule 都没有时，也能正常启动，只是不做任何 SQL 改写
+ *
  * @author qiwumind
  */
 @AutoConfiguration
+@ConditionalOnProperty(prefix = SystemConstants.Prefix.DATA_PERMISSION, name = "enabled",
+        havingValue = "true", matchIfMissing = true)
+@EnableConfigurationProperties(DataPermissionProperties.class)
 public class QiwumindDataPermissionAutoConfiguration {
 
     @Bean
-    public DataPermissionRuleFactory dataPermissionRuleFactory(List<DataPermissionRule> rules) {
-        return new DataPermissionRuleFactoryImpl(rules);
+    public DataPermissionRuleFactory dataPermissionRuleFactory(ObjectProvider<DataPermissionRule> rules) {
+        // 用 ObjectProvider 而非 List<DataPermissionRule> 直接注入：
+        // 业务项目可能一个数据权限规则都没有，此时 List 注入会退化成「找不到 java.util.List 类型的 Bean」
+        // 直接启动失败；ObjectProvider 在零规则时返回空流，保证「不配置也能启动」。
+        // orderedStream() 会按 @Order / Ordered 排序，与原 List 注入的行为一致。
+        return new DataPermissionRuleFactoryImpl(rules.orderedStream().toList());
     }
 
     @Bean

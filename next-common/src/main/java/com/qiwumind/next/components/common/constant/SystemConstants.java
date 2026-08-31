@@ -114,6 +114,7 @@ public class SystemConstants {
         public static final String COMPUTE = ROOT + "compute";
         public static final String CONTEXT = ROOT + "context";
         public static final String TENANT = ROOT + "tenant";
+        public static final String DATA_PERMISSION = ROOT + "data-permission";
         public static final String QUARTZ = ROOT + "quartz";
         public static final String TRACER = ROOT + "tracer";
         public static final String LICENSE = ROOT + "license";

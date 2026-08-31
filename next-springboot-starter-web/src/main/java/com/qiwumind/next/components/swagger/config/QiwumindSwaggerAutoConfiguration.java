@@ -26,6 +26,7 @@
 package com.qiwumind.next.components.swagger.config;
 
 import com.github.xiaoymin.knife4j.spring.configuration.Knife4jAutoConfiguration;
+import com.github.xiaoymin.knife4j.spring.configuration.Knife4jProperties;
 import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Contact;
@@ -70,7 +71,14 @@ import static com.qiwumind.next.components.web.core.util.WebFrameworkUtils.HEADE
  */
 @AutoConfiguration(before = Knife4jAutoConfiguration.class) // before 原因，保证覆写的 Knife4jOpenApiCustomizer 先生效！相关 https://github.com/YunaiV/ruoyi-vue-pro/issues/954 讨论
 @ConditionalOnClass({OpenAPI.class})
-@EnableConfigurationProperties(SwaggerProperties.class)
+// 兜底注册 Knife4jProperties：Knife4jOpenApiCustomizer 构造器的第一个参数就依赖它，
+// 而它原本只由 knife4j 的 Knife4jAutoConfiguration 通过 @EnableConfigurationProperties 注册，
+// 一旦该自动配置未生效（其条件是 @ConditionalOnProperty(name="knife4j.enable", havingValue="true")，
+// 且没有 matchIfMissing），就会报 "required a bean of type 'Knife4jProperties' that could not be found"。
+// 这里提前注册一份，bean name 与 knife4j 自己注册的完全一致
+// （规则：@ConfigurationProperties 的 prefix + "-" + 全类名），
+// EnableConfigurationPropertiesRegistrar 内部有 containsBeanDefinition 判重，不会重复注册。
+@EnableConfigurationProperties({SwaggerProperties.class, Knife4jProperties.class})
 @ConditionalOnProperty(prefix = "springdoc.api-docs", name = "enabled", havingValue = "true", matchIfMissing = true) // 设置为 false 时，禁用
 @Import(Knife4jOpenApiCustomizer.class)
 public class QiwumindSwaggerAutoConfiguration {
