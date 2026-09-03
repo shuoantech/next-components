@@ -23,48 +23,22 @@
  * Email: 307039176@qq.com
  */
 
-package com.qiwumind.next.components.crypto.core.license.model;
-
-import lombok.Data;
+package com.qiwumind.next.components.crypto.core.datasource;
 
 /**
- * License 验证结果
+ * 数据源密码解密失败异常。
+ * <p>
+ * 启动阶段解密密文密码失败时抛出，使 Spring 容器以 fail-fast 方式中止启动。
+ * 异常信息刻意不包含明文密码，避免敏感信息泄露到日志。
+ * </p>
  */
-@Data
-public class LicenseValidateResult {
-    
-    /**
-     * 是否有效
-     */
-    private boolean valid;
-    
-    /**
-     * 错误码
-     */
-    private String errorCode;
-    
-    /**
-     * 错误信息
-     */
-    private String errorMessage;
-    
-    /**
-     * License 信息
-     */
-    private LicenseInfo licenseInfo;
-    
-    public static LicenseValidateResult success(LicenseInfo licenseInfo) {
-        LicenseValidateResult result = new LicenseValidateResult();
-        result.setValid(true);
-        result.setLicenseInfo(licenseInfo);
-        return result;
+public class DatasourcePasswordDecryptException extends RuntimeException {
+
+    public DatasourcePasswordDecryptException(String message) {
+        super(message);
     }
-    
-    public static LicenseValidateResult fail(String errorCode, String errorMessage) {
-        LicenseValidateResult result = new LicenseValidateResult();
-        result.setValid(false);
-        result.setErrorCode(errorCode);
-        result.setErrorMessage(errorMessage);
-        return result;
+
+    public DatasourcePasswordDecryptException(String message, Throwable cause) {
+        super(message, cause);
     }
 }

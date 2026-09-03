@@ -1,14 +1,20 @@
 package com.qiwumind.next.components.common.result;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
+import lombok.EqualsAndHashCode;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
 @Schema(description = "分页结果")
-@Data
+@Getter
+@Setter
+@ToString
+@EqualsAndHashCode
 public final class PageResult<T> implements Serializable {
 
     @Schema(description = "总量", requiredMode = Schema.RequiredMode.REQUIRED)

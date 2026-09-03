@@ -26,7 +26,11 @@
 package com.qiwumind.next.components.license.autoconfigure;
 
 import jakarta.validation.constraints.NotBlank;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
+import lombok.EqualsAndHashCode;
+import lombok.RequiredArgsConstructor;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 import com.qiwumind.next.components.common.constant.SystemConstants;
@@ -35,7 +39,11 @@ import org.springframework.validation.annotation.Validated;
 import java.time.Duration;
 import java.util.List;
 
-@Data
+@Getter
+@Setter
+@ToString
+@EqualsAndHashCode
+@RequiredArgsConstructor
 @Validated
 @ConfigurationProperties(prefix = SystemConstants.Prefix.LICENSE)
 public class LicenseProperties {
@@ -45,14 +53,22 @@ public class LicenseProperties {
     private Signing signing = new Signing();
     private Binding binding = new Binding();
 
-    @Data
+    @Getter
+    @Setter
+    @ToString
+    @EqualsAndHashCode
+    @RequiredArgsConstructor
     public static class File {
         private String path = "license/license.dat";
         private String backupPath = "license/license.dat.bak";
         private boolean autoCreate = true;
     }
 
-    @Data
+    @Getter
+    @Setter
+    @ToString
+    @EqualsAndHashCode
+    @RequiredArgsConstructor
     public static class Validation {
         private boolean strictMode = true;
         private Duration gracePeriod = Duration.ofDays(7);
@@ -71,7 +87,11 @@ public class LicenseProperties {
         private List<String> excludePaths;
     }
 
-    @Data
+    @Getter
+    @Setter
+    @ToString
+    @EqualsAndHashCode
+    @RequiredArgsConstructor
     public static class Signing {
         @NotBlank(message = "私钥路径不能为空")
         private String privateKeyPath = "keys/private.key";
@@ -84,7 +104,11 @@ public class LicenseProperties {
         private int keySize = 2048;
     }
 
-    @Data
+    @Getter
+    @Setter
+    @ToString
+    @EqualsAndHashCode
+    @RequiredArgsConstructor
     public static class Binding {
         private boolean requireIpBinding = false;
         private boolean requireMacBinding = false;

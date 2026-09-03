@@ -25,7 +25,11 @@
 
 package com.qiwumind.next.components.swagger.config;
 
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
+import lombok.EqualsAndHashCode;
+import lombok.RequiredArgsConstructor;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 import com.qiwumind.next.components.common.constant.SystemConstants;
@@ -37,7 +41,11 @@ import jakarta.validation.constraints.NotEmpty;
  * @author qiwumind
  */
 @ConfigurationProperties(SystemConstants.Prefix.OPENAPI)
-@Data
+@Getter
+@Setter
+@ToString
+@EqualsAndHashCode
+@RequiredArgsConstructor
 public class SwaggerProperties {
 
     /**

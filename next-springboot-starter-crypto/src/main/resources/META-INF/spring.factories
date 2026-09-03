@@ -1,0 +1,3 @@
+# 这是 Properties 格式文件
+org.springframework.boot.env.EnvironmentPostProcessor=\
+com.qiwumind.next.components.crypto.autoconfigure.DatasourceCryptoEnvironmentPostProcessor

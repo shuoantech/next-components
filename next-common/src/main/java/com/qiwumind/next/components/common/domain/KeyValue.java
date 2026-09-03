@@ -26,7 +26,10 @@
 package com.qiwumind.next.components.common.domain;
 
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
@@ -36,7 +39,10 @@ import java.io.Serializable;
  *
  * @author 3070
  */
-@Data
+@Getter
+@Setter
+@ToString
+@EqualsAndHashCode
 @NoArgsConstructor
 @AllArgsConstructor
 public class KeyValue<K, V> implements Serializable {

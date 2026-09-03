@@ -29,7 +29,9 @@ import com.qiwumind.next.components.ip.core.enums.AreaTypeEnum;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
@@ -40,7 +42,9 @@ import java.util.List;
  * 数据可见 resources/area.csv 文件
  * @author qiwumind
  */
-@Data
+@Getter
+@Setter
+@EqualsAndHashCode
 @AllArgsConstructor
 @NoArgsConstructor
 @ToString(exclude = {"parent"}) // 参见 https://gitee.com/qiwumindcode/qiwumind-cloud-mini/pulls/2 原因

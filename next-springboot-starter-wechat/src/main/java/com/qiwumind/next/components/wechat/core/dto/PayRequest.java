@@ -27,15 +27,21 @@ package com.qiwumind.next.components.wechat.core.dto;
 
 import com.qiwumind.next.components.wechat.core.enums.PayType;
 import lombok.Builder;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
+import lombok.EqualsAndHashCode;
+import lombok.RequiredArgsConstructor;
 
 import java.math.BigDecimal;
 
 /**
  * 支付请求参数
  */
-@Data
-@Builder
+@Getter
+@Setter
+@ToString
+@EqualsAndHashCode
 public class PayRequest {
     
     // 必填参数

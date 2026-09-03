@@ -1,2 +1,1 @@
-com.qiwumind.next.components.crypto.autoconfigure.LicenseAutoConfiguration
 com.qiwumind.next.components.crypto.autoconfigure.CryptoDbAutoConfiguration

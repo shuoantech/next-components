@@ -25,7 +25,11 @@
 
 package com.qiwumind.next.components.wechat.autoconfigure;
 
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
+import lombok.EqualsAndHashCode;
+import lombok.RequiredArgsConstructor;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 import com.qiwumind.next.components.common.constant.SystemConstants;
@@ -36,7 +40,11 @@ import org.springframework.context.annotation.Configuration;
  *
  * @date 2023-09-07
  */
-@Data
+@Getter
+@Setter
+@ToString
+@EqualsAndHashCode
+@RequiredArgsConstructor
 @Configuration
 @ConfigurationProperties(SystemConstants.Prefix.ThirdParty.WECHAT_MP)
 public class WxMpProperties {
@@ -65,14 +73,22 @@ public class WxMpProperties {
     private TemplateId templateId;
     private Url url;
 
-    @Data
+    @Getter
+    @Setter
+    @ToString
+    @EqualsAndHashCode
+    @RequiredArgsConstructor
     public static class TemplateId {
         private String paySuccess;
         private String orderFinish;
     }
 
 
-    @Data
+    @Getter
+    @Setter
+    @ToString
+    @EqualsAndHashCode
+    @RequiredArgsConstructor
     public static class Url {
         private String orderDetail;
         private String orderComment;

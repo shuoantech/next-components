@@ -27,7 +27,11 @@ package com.qiwumind.next.components.groovy.properties;
 
 
 
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
+import lombok.EqualsAndHashCode;
+import lombok.RequiredArgsConstructor;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 import com.qiwumind.next.components.common.constant.SystemConstants;
@@ -38,7 +42,11 @@ import com.qiwumind.next.components.common.constant.SystemConstants;
  *
  * @author wenpan 2022/09/25 13:34
  */
-@Data
+@Getter
+@Setter
+@ToString
+@EqualsAndHashCode
+@RequiredArgsConstructor
 @ConfigurationProperties(prefix = SystemConstants.Prefix.Groovy.CLASSPATH_LOADER)
 public class GroovyClasspathLoaderProperties {
 

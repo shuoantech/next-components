@@ -27,7 +27,11 @@ package com.qiwumind.next.components.pricing.core.bo;
 
 import com.qiwumind.next.components.pricing.core.enums.ActivityEnum;
 import com.qiwumind.next.components.pricing.core.enums.PromotionTypeEnum;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
+import lombok.EqualsAndHashCode;
+import lombok.RequiredArgsConstructor;
 
 import java.util.Map;
 
@@ -38,7 +42,11 @@ import java.util.Map;
  * 每个活动携带三个 Aviator 表达式字符串（规则链）和一个元数据映射，
  * 供 Aviator 函数在执行期间读取。
  */
-@Data
+@Getter
+@Setter
+@ToString
+@EqualsAndHashCode
+@RequiredArgsConstructor
 public class ActivityBO extends ActivityBaseBO {
 
     /** 促销类型（非促销活动为 null） */

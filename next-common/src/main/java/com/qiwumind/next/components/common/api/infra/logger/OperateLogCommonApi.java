@@ -23,50 +23,33 @@
  * Email: 307039176@qq.com
  */
 
-package com.qiwumind.next.components.crypto.core.license;
+package com.qiwumind.next.components.common.api.infra.logger;
 
-
-import com.qiwumind.next.components.crypto.core.license.model.LicenseInfo;
-import com.qiwumind.next.components.crypto.core.license.model.LicenseValidateResult;
+import com.qiwumind.next.components.common.api.infra.logger.dto.OperateLogCreateReqDTO;
+import jakarta.validation.Valid;
+import org.springframework.scheduling.annotation.Async;
 
 /**
- * License 服务辅助类，供外部调用
+ * 操作日志 API 接口
+ *
+ * @author 3070
  */
-public class LicenseServiceHelper {
-    
-    private final LicenseValidator licenseValidator;
-    
-    public LicenseServiceHelper(LicenseValidator licenseValidator) {
-        this.licenseValidator = licenseValidator;
-    }
-    
+public interface OperateLogCommonApi {
+
     /**
-     * 获取 License 验证结果
+     * 创建操作日志
+     *
+     * @param createReqDTO 请求
      */
-    public LicenseValidateResult getValidateResult() {
-        return licenseValidator.getCachedResult();
-    }
-    
+    void createOperateLog(@Valid OperateLogCreateReqDTO createReqDTO);
+
     /**
-     * 检查 License 是否有效
+     * 【异步】创建操作日志
+     *
+     * @param createReqDTO 请求
      */
-    public boolean isValid() {
-        LicenseValidateResult result = licenseValidator.getCachedResult();
-        return result != null && result.isValid();
+    default void createOperateLogAsync(OperateLogCreateReqDTO createReqDTO) {
+        createOperateLog(createReqDTO);
     }
-    
-    /**
-     * 获取 License 信息
-     */
-    public LicenseInfo getLicenseInfo() {
-        LicenseValidateResult result = licenseValidator.getCachedResult();
-        return result != null ? result.getLicenseInfo() : null;
-    }
-    
-    /**
-     * 清除缓存，强制重新验证
-     */
-    public void refresh() {
-        licenseValidator.clearCache();
-    }
+
 }

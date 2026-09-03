@@ -26,14 +26,20 @@
 package com.qiwumind.next.components.pricing.core.bo;
 
 import com.qiwumind.next.components.pricing.core.enums.ActivityEnum;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
+import lombok.EqualsAndHashCode;
 
 /**
  * 优惠明细 - 记录某个活动对某个商品优惠了多少。
  * <p>
  * 每个商品维护一个此类列表，每个适用优惠的活动对应一条记录。
  */
-@Data
+@Getter
+@Setter
+@ToString
+@EqualsAndHashCode
 public class DiscountBO {
 
     /** 活动枚举类型 */

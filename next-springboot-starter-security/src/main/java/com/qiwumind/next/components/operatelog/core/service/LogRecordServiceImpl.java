@@ -25,8 +25,8 @@
 
 package com.qiwumind.next.components.operatelog.core.service;
 
-import com.qiwumind.next.components.common.api.system.logger.OperateLogCommonApi;
-import com.qiwumind.next.components.common.api.system.logger.dto.OperateLogCreateReqDTO;
+import com.qiwumind.next.components.common.api.infra.logger.OperateLogCommonApi;
+import com.qiwumind.next.components.common.api.infra.logger.dto.OperateLogCreateReqDTO;
 import com.qiwumind.next.components.common.util.monitor.TracerUtils;
 import com.qiwumind.next.components.common.util.servlet.ServletUtils;
 import com.qiwumind.next.components.security.core.LoginUser;
@@ -38,10 +38,12 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 /**
  * 操作日志 ILogRecordService 实现类
  * 基于 {@link OperateLogCommonApi} 实现，记录操作日志
+ *
  * @author qiwumind HUIHUI
  */
 @Slf4j
@@ -63,7 +65,10 @@ public class LogRecordServiceImpl implements ILogRecordService {
             fillRequestFields(reqDTO);
 
             // 2. 异步记录日志
-            operateLogApi.createOperateLogAsync(reqDTO);
+            CompletableFuture.runAsync(() -> {
+                operateLogApi.createOperateLogAsync(reqDTO);
+            });
+
         } catch (Throwable ex) {
             // 由于 @Async 异步调用，这里打印下日志，更容易跟进
             log.error("[record][url({}) log({}) 发生异常]", reqDTO.getRequestUrl(), reqDTO, ex);

@@ -31,7 +31,11 @@ import com.baomidou.mybatisplus.annotation.TableLogic;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.experimental.Accessors;
 import org.dromara.core.trans.vo.TransPojo;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
+import lombok.EqualsAndHashCode;
+import lombok.RequiredArgsConstructor;
 import org.apache.ibatis.type.JdbcType;
 
 import java.io.Serializable;
@@ -43,7 +47,11 @@ import java.time.LocalDateTime;
  * 为什么实现 {@link TransPojo} 接口？
  * 因为使用 Easy-Trans TransType.SIMPLE 模式，集成 MyBatis Plus 查询
  */
-@Data
+@Getter
+@Setter
+@ToString
+@EqualsAndHashCode
+@RequiredArgsConstructor
 @Accessors(chain = true)
 @JsonIgnoreProperties(value = "transMap") // 由于 Easy-Trans 会添加 transMap 属性，避免 Jackson 在 Spring Cache 反序列化报错
 public abstract class BaseDO implements Serializable, TransPojo {

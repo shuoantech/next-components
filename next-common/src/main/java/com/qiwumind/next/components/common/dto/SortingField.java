@@ -26,7 +26,10 @@
 package com.qiwumind.next.components.common.dto;
 
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
@@ -36,7 +39,10 @@ import java.io.Serializable;
  *
  * 类名加了 ing 的原因是，避免和 ES SortField 重名。
  */
-@Data
+@Getter
+@Setter
+@ToString
+@EqualsAndHashCode
 @NoArgsConstructor
 @AllArgsConstructor
 public class SortingField implements Serializable {

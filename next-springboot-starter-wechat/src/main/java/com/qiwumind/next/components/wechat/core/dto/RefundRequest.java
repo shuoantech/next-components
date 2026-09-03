@@ -25,27 +25,29 @@
 
 package com.qiwumind.next.components.wechat.core.dto;
 
-import lombok.Builder;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 
 import java.math.BigDecimal;
 
 /**
  * 退款请求参数
  */
-@Data
-@Builder
+@Getter
+@Setter
+@ToString
 public class RefundRequest {
-    
+
     private String outTradeNo;
-    
+
     private String outRefundNo;
-    
+
     private BigDecimal refundAmount;
-    
+
     private BigDecimal totalAmount;
-    
+
     private String reason;
-    
+
     private String notifyUrl;
 }

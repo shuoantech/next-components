@@ -1,160 +1,302 @@
-/*
- * MIT License
- *
- * Copyright (c) 2026 qiwumind
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in all
- * copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.  Author: liks
- * Email: 307039176@qq.com
- */
-
 package com.qiwumind.next.components.common.util.crypto;
 
-
-
 import cn.hutool.core.util.HexUtil;
-import cn.hutool.crypto.symmetric.SymmetricCrypto;
-import org.bouncycastle.crypto.CipherParameters;
-import org.bouncycastle.crypto.engines.SM4Engine;
-import org.bouncycastle.crypto.modes.CBCBlockCipher;
-import org.bouncycastle.crypto.modes.CBCModeCipher;
-import org.bouncycastle.crypto.paddings.PaddedBufferedBlockCipher;
-import org.bouncycastle.crypto.params.KeyParameter;
-import org.bouncycastle.crypto.params.ParametersWithIV;
-import org.bouncycastle.jce.provider.BouncyCastleProvider;
+import cn.hutool.crypto.Mode;
+import cn.hutool.crypto.Padding;
+import cn.hutool.crypto.symmetric.SM4;
 
-import java.security.Security;
-import java.util.Base64;
+import java.nio.charset.StandardCharsets;
 
 /**
- * @Author 国密4工具类
- * @Description 数据加密解密
- **/
-public class Sm4Utils {
-    static {
-        Security.addProvider(new BouncyCastleProvider());
-    }
-    // 16-byte key for SM4
-    public static final byte[] keys = new byte[]{64, 74, 104, 120, 50, 48, 50, 52, 35, 36, 37, 94, 38, 42, 33, 43};
-    // 16-byte IV for CBC mode
-    public static final byte[] ivs = new byte[]{64, 74, 104, 120, 50, 48, 50, 52, 35, 36, 37, 94, 38, 42, 33, 43};
+ * 国密 SM4 加解密工具类（基于 Hutool 实现）
+ * <p>
+ * 支持 CBC/ECB 模式，推荐使用 CBC 模式
+ * 密钥长度固定为 16 字节（128 位）
+ *
+ * @author liks
+ */
+public final class Sm4Utils {
+    /**
+     * SM4 密钥长度：16 字节
+     */
+    private static final int KEY_SIZE = 16;
 
     /**
-     * 设置一个标识符，标识@SM4@- 开头的字符串是经过SM4加密的需要解密
+     * SM4 加密前缀，用于标识已加密数据
      */
     public static final String SM4_PREFIX = "SM4:";
 
     /**
-     * 对字符串进行加密
-     *
-     * @param data
-     * @return
+     * 默认密钥（⚠️ 仅用于开发测试，生产环境必须从配置中心或环境变量读取）
      */
-    public static String encrypt(String data) throws Exception {
-        byte[] dataToEncrypt = data.getBytes();
-        byte[] encryptedData = encrypt(keys, ivs, dataToEncrypt);
-        return java.util.Base64.getEncoder().encodeToString(encryptedData);
+    private static final String DEFAULT_KEY_HEX = "7f3b9a2c4e8d1f5a6b3c7d9e0f1a2b3c";
+    private static final String DEFAULT_IV_HEX = "9e4b7c1d5f8a2e6c0f3b7a9d4e8c1f5a";
+    /**
+     * 默认加密器实例（CBC模式，更安全）
+     */
+    private static final SM4 DEFAULT_CIPHER_CBC;
+
+    /**
+     * ECB 模式加密器（用于兼容旧数据）
+     */
+    private static final SM4 DEFAULT_CIPHER_ECB;
+
+    static {
+        byte[] keyBytes = HexUtil.decodeHex(DEFAULT_KEY_HEX);
+        byte[] ivBytes = HexUtil.decodeHex(DEFAULT_IV_HEX);
+        // ✅ CBC 模式（推荐）- 使用 SM4 类
+        DEFAULT_CIPHER_CBC = new SM4(Mode.CBC, Padding.PKCS5Padding, keyBytes, ivBytes);
+        // ✅ ECB 模式（兼容旧数据）
+        DEFAULT_CIPHER_ECB = new SM4(Mode.ECB, Padding.PKCS5Padding, keyBytes);
     }
 
-    public static String encrypt(byte[] key, byte[] iv, String data) throws Exception {
-        byte[] dataToEncrypt = data.getBytes();
-        byte[] encryptedData = encrypt(key, iv, dataToEncrypt);
-        return java.util.Base64.getEncoder().encodeToString(encryptedData);
+    private Sm4Utils() {
+        // 工具类私有构造，禁止实例化
     }
 
-    public static byte[] encrypt(byte[] key, byte[] iv, byte[] data) throws Exception {
-        SM4Engine engine = new SM4Engine();
-        CBCModeCipher cbcBlockCipher = CBCBlockCipher.newInstance(engine);
-        PaddedBufferedBlockCipher cipher = new PaddedBufferedBlockCipher(cbcBlockCipher);
-        CipherParameters params = new ParametersWithIV(new KeyParameter(key), iv);
-        cipher.init(true, params);
-        byte[] temp = new byte[cipher.getOutputSize(data.length)];
-        int len = cipher.processBytes(data, 0, data.length, temp, 0);
-        len += cipher.doFinal(temp, len);
-
-        byte[] out = new byte[len];
-        System.arraycopy(temp, 0, out, 0, len);
-        return out;
+    // ==================== 加密方法 ====================
+    /**
+     * 使用默认密钥和 CBC 模式加密（推荐）
+     */
+    public static String encrypt(String plaintext) {
+        if (plaintext == null) {
+            return null;
+        }
+        if (isEncrypted(plaintext)) {
+            return plaintext;
+        }
+        String encrypted = DEFAULT_CIPHER_CBC.encryptBase64(plaintext);
+        return SM4_PREFIX + encrypted;
     }
 
     /**
-     * 对字符串进行解密
-     *
-     * @param encryptValue
-     * @return
+     * 使用指定密钥和 CBC 模式加密
      */
-    public static String decrypt(String encryptValue) throws Exception {
-        // 解密时，需要去除加密标识符
-        byte[] decryptedData = decrypt(keys, ivs,Base64.getDecoder().decode(encryptValue));
-
-        return new String(decryptedData);
+    public static String encryptCbc(String plaintext, String keyHex, String ivHex) {
+        validateKeyAndIv(keyHex, ivHex);
+        SM4 cipher = createCipherCbc(keyHex, ivHex);
+        return cipher.encryptBase64(plaintext);
     }
 
-    public static byte[] decrypt(byte[] key, byte[] iv, byte[] data) throws Exception {
-        SM4Engine engine = new SM4Engine();
-        CBCModeCipher cbcBlockCipher = CBCBlockCipher.newInstance(engine);
-        PaddedBufferedBlockCipher cipher = new PaddedBufferedBlockCipher(cbcBlockCipher);
-        CipherParameters params = new ParametersWithIV(new KeyParameter(key), iv);
-        cipher.init(false, params);
-        byte[] temp = new byte[cipher.getOutputSize(data.length)];
-        int len = cipher.processBytes(data, 0, data.length, temp, 0);
-        len += cipher.doFinal(temp, len);
-        byte[] out = new byte[len];
-        System.arraycopy(temp, 0, out, 0, len);
-        return out;
+    /**
+     * 使用默认密钥和 ECB 模式加密（仅用于兼容旧数据）
+     */
+    public static String encryptEcb(String plaintext) {
+        if (plaintext == null) {
+            return null;
+        }
+        return DEFAULT_CIPHER_ECB.encryptHex(plaintext);
     }
 
-
-    //SM4-加密
-    public static String encryptSM4(String key, String plaintext) {
-        //指明加密算法和秘钥
-        SymmetricCrypto sm4 = new SymmetricCrypto("SM4/ECB/PKCS5Padding", HexUtil.decodeHex(key));
-        return sm4.encryptHex(plaintext);
+    /**
+     * 使用指定密钥和 ECB 模式加密
+     */
+    public static String encryptEcb(String plaintext, String keyHex) {
+        validateKey(keyHex);
+        SM4 cipher = createCipherEcb(keyHex);
+        return cipher.encryptHex(plaintext);
     }
 
-    //SM4-解密
-    public static String decryptSM4(String key, String ciphertext) {
-        //指明加密算法和秘钥
-        SymmetricCrypto sm4 = new SymmetricCrypto("SM4/ECB/PKCS5Padding", HexUtil.decodeHex(key));
-        String decryptStr = sm4.decryptStr(ciphertext);
-        return decryptStr;
+    // ==================== 解密方法 ====================
+
+    /**
+     * 使用默认密钥和 CBC 模式解密（推荐）
+     * 自动识别是否带有 SM4: 前缀
+     */
+    public static String decrypt(String ciphertext) {
+        if (ciphertext == null || ciphertext.isEmpty()) {
+            return ciphertext;
+        }
+
+        if (!isEncrypted(ciphertext)) {
+            return ciphertext;
+        }
+
+        String realCipher = removePrefix(ciphertext);
+        String decrypted = DEFAULT_CIPHER_CBC.decryptStr(realCipher);
+        return decrypted;
     }
 
+    /**
+     * 使用指定密钥和 CBC 模式解密
+     */
+    public static String decryptCbc(String ciphertext, String keyHex, String ivHex) {
+        validateKeyAndIv(keyHex, ivHex);
+        SM4 cipher = createCipherCbc(keyHex, ivHex);
+        return cipher.decryptStr(ciphertext);
+    }
 
-    public static void main(String[] args) throws Exception {
-        byte[] key = "0123456789abcdef".getBytes(); // 16-byte key for SM4
-        byte[] iv = "abcdef9876543210".getBytes(); // 16-byte IV for CBC mode
-        byte[] dataToEncrypt = "Hello, Bouncy Castle SM4!".getBytes();
+    /**
+     * 使用默认密钥和 ECB 模式解密（仅用于兼容旧数据）
+     */
+    public static String decryptEcb(String ciphertext) {
+        if (ciphertext == null || ciphertext.isEmpty()) {
+            return ciphertext;
+        }
+        return DEFAULT_CIPHER_ECB.decryptStr(ciphertext);
+    }
 
-        byte[] encryptedData = encrypt(key, iv, dataToEncrypt);
-        System.out.println("Encrypted Data: " + java.util.Base64.getEncoder().encodeToString(encryptedData));
+    /**
+     * 使用指定密钥和 ECB 模式解密
+     */
+    public static String decryptEcb(String ciphertext, String keyHex) {
+        validateKey(keyHex);
+        SM4 cipher = createCipherEcb(keyHex);
+        return cipher.decryptStr(ciphertext);
+    }
 
-        byte[] decryptedData = decrypt(key, iv, encryptedData);
-        System.out.println("Decrypted Data: " + new String(decryptedData));
+    // ==================== 便捷方法 ====================
 
-        String sss = encrypt("hermxx@0609#1");
-        System.out.println("Encrypted Data2222: " + sss);
+    /**
+     * 加密并返回 Hex 格式（便于数据库存储）
+     */
+    public static String encryptHex(String plaintext) {
+        if (plaintext == null) {
+            return null;
+        }
+        if (isEncrypted(plaintext)) {
+            return plaintext;
+        }
+        return SM4_PREFIX + DEFAULT_CIPHER_CBC.encryptHex(plaintext);
+    }
 
-        System.out.println("decrypt Data2222: " + decrypt("WYSM4:2HiIEECMDpHIyL2z+xC4Yg==".substring(6)));
+    /**
+     * 从 Hex 格式解密
+     */
+    public static String decryptHex(String ciphertextHex) {
+        if (ciphertextHex == null || ciphertextHex.isEmpty()) {
+            return ciphertextHex;
+        }
+        if (!isEncrypted(ciphertextHex)) {
+            return ciphertextHex;
+        }
+        String realCipher = removePrefix(ciphertextHex);
+        return DEFAULT_CIPHER_CBC.decryptStr(realCipher, StandardCharsets.UTF_8);
+    }
 
-        String resp = "16f4d106102a08f03dad9f0e0ee3525b60f6b5954c0525e7738aa9e7e2a47b282560ed82c4f5a8ebb477a7fd3cac2d298af905fad24ac4d1f3f0e644867645a69382acfd8ac66f08beb9eab42cb1a653d4d900bd258e41b4ee25567e4facc9495dc7fb6bdf612b47652b0f925f08911d630ef62d4a9d371d87057866034855d2";
-        String r = decryptSM4("CE39D76F1B318B35F7467346F3D358D4", resp);
-        System.out.println(r);
+    /**
+     * 判断字符串是否已加密
+     */
+    public static boolean isEncrypted(String data) {
+        return data != null && data.startsWith(SM4_PREFIX);
+    }
 
+    /**
+     * 移除加密前缀
+     */
+    public static String removePrefix(String data) {
+        if (data == null) {
+            return null;
+        }
+        return data.startsWith(SM4_PREFIX) ? data.substring(SM4_PREFIX.length()) : data;
+    }
+
+    /**
+     * 生成随机密钥（十六进制字符串）
+     */
+    public static String generateRandomKey() {
+        byte[] key = new byte[KEY_SIZE];
+        new java.security.SecureRandom().nextBytes(key);
+        return HexUtil.encodeHexStr(key);
+    }
+
+    /**
+     * 生成随机 IV
+     */
+    public static String generateRandomIv() {
+        return generateRandomKey();
+    }
+
+    /**
+     * 校验密钥合法性
+     */
+    public static boolean isValidKey(String keyHex) {
+        if (keyHex == null) {
+            return false;
+        }
+        try {
+            byte[] bytes = HexUtil.decodeHex(keyHex);
+            return bytes.length == KEY_SIZE;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    // ==================== 私有辅助方法 ====================
+
+    /**
+     * ✅ 使用 SM4 类创建 CBC 模式加密器
+     */
+    private static SM4 createCipherCbc(String keyHex, String ivHex) {
+        byte[] keyBytes = HexUtil.decodeHex(keyHex);
+        byte[] ivBytes = HexUtil.decodeHex(ivHex);
+        return new SM4(Mode.CBC, Padding.PKCS5Padding, keyBytes, ivBytes);
+    }
+
+    /**
+     * ✅ 使用 SM4 类创建 ECB 模式加密器
+     */
+    private static SM4 createCipherEcb(String keyHex) {
+        byte[] keyBytes = HexUtil.decodeHex(keyHex);
+        return new SM4(Mode.ECB, Padding.PKCS5Padding, keyBytes);
+    }
+
+    private static void validateKey(String keyHex) {
+        if (keyHex == null || keyHex.isEmpty()) {
+            throw new IllegalArgumentException("SM4 密钥不能为空");
+        }
+        byte[] bytes = HexUtil.decodeHex(keyHex);
+        if (bytes.length != KEY_SIZE) {
+            throw new IllegalArgumentException(
+                    String.format("SM4 密钥长度必须为 %d 字节，当前: %d 字节", KEY_SIZE, bytes.length)
+            );
+        }
+    }
+
+    private static void validateKeyAndIv(String keyHex, String ivHex) {
+        validateKey(keyHex);
+        validateKey(ivHex);
+    }
+
+    // ==================== 测试入口 ====================
+
+    public static void main(String[] args) {
+        // 生成生产环境密钥
+        String key1 = Sm4Utils.generateRandomKey();
+        String iv1 = Sm4Utils.generateRandomIv();
+
+
+        System.out.println("========== SM4 工具类测试 ==========\n");
+
+        String plaintext = "Hello, SM4 国密加密测试! 123456";
+        System.out.println("原始数据: " + plaintext);
+
+        // 测试 CBC 模式
+        System.out.println("\n--- CBC 模式（推荐） ---");
+        String encryptedCbc = encrypt(plaintext);
+        System.out.println("加密结果: " + encryptedCbc);
+        String decryptedCbc = decrypt(encryptedCbc);
+        System.out.println("解密结果: " + decryptedCbc);
+        System.out.println("验证通过: " + plaintext.equals(decryptedCbc));
+
+        // 测试 ECB 模式
+        System.out.println("\n--- ECB 模式（兼容） ---");
+        String encryptedEcb = encryptEcb(plaintext);
+        System.out.println("加密结果: " + encryptedEcb);
+        String decryptedEcb = decryptEcb(encryptedEcb);
+        System.out.println("解密结果: " + decryptedEcb);
+        System.out.println("验证通过: " + plaintext.equals(decryptedEcb));
+
+        // 测试自定义密钥
+        System.out.println("\n--- 自定义密钥 ---");
+        String keyHex = "0123456789abcdef0123456789abcdef";
+        String ivHex = "fedcba9876543210fedcba9876543210";
+        String encCustom = encryptCbc(plaintext, keyHex, ivHex);
+        System.out.println("加密结果: " + encCustom);
+        String decCustom = decryptCbc(encCustom, keyHex, ivHex);
+        System.out.println("解密结果: " + decCustom);
+        System.out.println("验证通过: " + plaintext.equals(decCustom));
+
+        System.out.println("\n========== 测试完成 ==========");
     }
 }

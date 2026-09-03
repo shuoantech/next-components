@@ -28,14 +28,20 @@ package com.qiwumind.next.components.datasecure.common;
 
 
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 /**
  *
  * @author   Jun 6, 2017 6:33:21 PM
  */
-@Data
+@Getter
+@Setter
+@ToString
+@EqualsAndHashCode
 @AllArgsConstructor
 @NoArgsConstructor
 public class EncryptType {

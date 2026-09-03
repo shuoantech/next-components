@@ -25,15 +25,16 @@
 
 package com.qiwumind.next.components.crypto.core.db;
 
-import com.qiwumind.next.components.crypto.core.Enc;
+import com.qiwumind.next.components.common.util.crypto.Sm4Utils;
 import com.qiwumind.next.components.crypto.core.EncException;
 
 /**
- * 字段级加解密服务，对 {@link Enc} 做幂等、安全的封装：
+ * 字段级加解密服务，基于国密 SM4（{@link Sm4Utils}，SM4/CBC 模式）做幂等、安全的封装：
  * <ul>
- *     <li>{@link #encrypt(String)}：已加密（以 enc_ 前缀）或 null 直接返回，避免重复加密；</li>
+ *     <li>{@link #encrypt(String)}：已加密（以 {@code SM4:} 前缀）或 null 直接返回，避免重复加密；</li>
  *     <li>{@link #decrypt(String)}：非加密内容、或解密失败时原样返回，避免影响业务读取。</li>
  * </ul>
+ * 密文格式：{@code SM4:<Base64>}（前缀见 {@link Sm4Utils#SM4_PREFIX}），由 next-common 的 Sm4Utils 生成。
  */
 public class CryptoFieldService {
 
@@ -41,12 +42,12 @@ public class CryptoFieldService {
      * 加密明文。已加密或为空时原样返回。
      */
     public String encrypt(String plaintext) {
-        if (plaintext == null || plaintext.startsWith(Enc.PREFIX_ENC)) {
+        if (plaintext == null || plaintext.startsWith(Sm4Utils.SM4_PREFIX)) {
             return plaintext;
         }
         try {
-            return Enc.encryptData(plaintext);
-        } catch (EncException e) {
+            return Sm4Utils.encrypt(plaintext);
+        } catch (Exception e) {
             // 加密失败宁可中断写入，也不允许明文落库
             throw new IllegalStateException("字段加密失败: " + e.getMessage(), e);
         }
@@ -56,13 +57,14 @@ public class CryptoFieldService {
      * 解密密文。非密文或解密失败时原样返回（不抛异常，保证业务可读）。
      */
     public String decrypt(String ciphertext) {
-        if (ciphertext == null || !ciphertext.startsWith(Enc.PREFIX_ENC)) {
+        if (ciphertext == null || !ciphertext.startsWith(Sm4Utils.SM4_PREFIX)) {
             return ciphertext;
         }
         try {
-            return Enc.decryptData(ciphertext);
-        } catch (EncException e) {
+            return Sm4Utils.decrypt(ciphertext);
+        } catch (Exception e) {
             return ciphertext;
         }
     }
+
 }

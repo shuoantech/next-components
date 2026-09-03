@@ -26,7 +26,11 @@
 package com.qiwumind.next.components.web.config;
 
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
+import lombok.EqualsAndHashCode;
+import lombok.RequiredArgsConstructor;
 import lombok.NoArgsConstructor;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
@@ -40,7 +44,11 @@ import jakarta.validation.constraints.NotNull;
 
 @ConfigurationProperties(prefix = SystemConstants.Prefix.WEB)
 @Validated
-@Data
+@Getter
+@Setter
+@ToString
+@EqualsAndHashCode
+@RequiredArgsConstructor
 public class WebProperties {
 
     @NotNull(message = "APP API 不能为空")
@@ -51,7 +59,10 @@ public class WebProperties {
 //    @NotNull(message = "Admin UI 不能为空")
 //    private Ui adminUi;
 
-    @Data
+    @Getter
+    @Setter
+    @ToString
+    @EqualsAndHashCode
     @AllArgsConstructor
     @NoArgsConstructor
     @Valid
@@ -75,7 +86,11 @@ public class WebProperties {
 
     }
 
-    @Data
+    @Getter
+    @Setter
+    @ToString
+    @EqualsAndHashCode
+    @RequiredArgsConstructor
     @Valid
     public static class Ui {
 

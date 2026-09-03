@@ -28,7 +28,11 @@ package com.qiwumind.next.components.common.api.infra.logger.dto;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
+import lombok.EqualsAndHashCode;
+import lombok.RequiredArgsConstructor;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
@@ -38,7 +42,11 @@ import java.time.LocalDateTime;
  *
  * @author 3070
  */
-@Data
+@Getter
+@Setter
+@ToString
+@EqualsAndHashCode
+@RequiredArgsConstructor
 public class ApiAccessLogCreateReqDTO {
 
     /**

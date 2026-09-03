@@ -27,13 +27,21 @@ package com.qiwumind.next.components.wechat.core.dto;
 
 import com.qiwumind.next.components.wechat.core.enums.PayType;
 import lombok.Builder;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
+import lombok.EqualsAndHashCode;
+import lombok.RequiredArgsConstructor;
+import lombok.experimental.Accessors;
 
 /**
  * 支付结果
  */
-@Data
-@Builder
+@Getter
+@Setter
+@ToString
+@EqualsAndHashCode
+@Accessors(chain = true)
 public class PayResult {
 
     private PayType payType;  // 支付类型

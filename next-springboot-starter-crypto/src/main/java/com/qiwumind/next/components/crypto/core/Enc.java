@@ -34,8 +34,8 @@ import org.apache.commons.codec.binary.Hex;
 
 public class Enc {
     private static final String DEPLOY_ENV_KEY_NAME = "DEPLOY_ENV";
+    private static final String PROFILES_ACTIVE = "spring.profiles.active";
     private static final String DEPLOY_ENV_DEFAULT = "test";
-    private static String deployEnv;
     public static final String PREFIX_ENC = "enc_";
     private static String prefix = PREFIX_ENC;
 
@@ -73,13 +73,13 @@ public class Enc {
 
     private static IllegalArgumentException buildExceptionForIllegalInput(String inData) {
         if (!inData.startsWith(prefix)) {
-            throw new IllegalArgumentException("密文不合法, 密文必须以\"enc_\"开头");
+            throw new IllegalArgumentException(String.format("密文不合法, 密文必须以 \"enc_ \"开头"));
         } else {
             int index = inData.indexOf("_", prefix.length());
             if (index < 0) {
                 return new IllegalArgumentException("不是合法的密文");
             } else {
-                return new IllegalArgumentException(String.format("当前环境%s无法解密该密文%s", deployEnv, inData));
+                return new IllegalArgumentException(String.format("当前环境无法解密该密文%s", inData));
             }
         }
     }
@@ -96,39 +96,16 @@ public class Enc {
         return AESUtil.decrypt(var0);
     }
 
+    public static void main(String args[]) throws EncException {
+        String encryData = encryptData("123456");
+        String encryData2 = encryptData("19021719922");
+        String encryData3 = encryptData("341203198507103136");
 
-    static {
-//        String[] libFileNames = new String[]{"C:\\Windows\\wyenc.dll", "/usr/local/lib/libwyenc.so", "/usr/local/lib/libzaenc.dylib"};
-//        try {
-//            System.load("enc");
-//        } catch (UnsatisfiedLinkError e  ) {
-//            String file = null;
-//            for (int i = 0; i < libFileNames.length; ++i) {
-//                if ((new File(libFileNames[i])).exists()) {
-//                    file = libFileNames[i];
-//                    break;
-//                }
-//            }
-//            if (file == null) {
-//                throw e;
-//            }
-//            System.load(file);
-//        }
+        System.out.println("encrypt == " + encryData);
+        System.out.println("encrypt2 == " + encryData2);
+        System.out.println("encrypt3 == " + encryData3);
 
-        deployEnv = System.getProperty("DEPLOY_ENV");
-        if (deployEnv == null || deployEnv.isEmpty()) {
-            deployEnv = System.getenv("DEPLOY_ENV");
-        }
-
-        if (deployEnv == null || deployEnv.isEmpty()) {
-            deployEnv = "test";
-        }
-
-        prefix = prefix + deployEnv + "_";
-    }
-
-
-    public static void main(String[] args) {
-        System.out.println(prefix);
+        String decrypt = decryptData("enc_ADB63AB9ACB359FE8FECA061619E5B47");
+        System.out.println("decrypt == " + decrypt);
     }
 }

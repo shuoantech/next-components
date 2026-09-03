@@ -27,7 +27,11 @@ package com.qiwumind.next.components.encrypt.config;
 
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
+import lombok.EqualsAndHashCode;
+import lombok.RequiredArgsConstructor;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 import com.qiwumind.next.components.common.constant.SystemConstants;
@@ -39,7 +43,11 @@ import org.springframework.validation.annotation.Validated;
  */
 @ConfigurationProperties(prefix = SystemConstants.Prefix.API_ENCRYPT)
 @Validated
-@Data
+@Getter
+@Setter
+@ToString
+@EqualsAndHashCode
+@RequiredArgsConstructor
 public class ApiEncryptProperties {
 
     /**

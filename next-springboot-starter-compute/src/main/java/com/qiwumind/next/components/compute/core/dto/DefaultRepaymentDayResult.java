@@ -27,12 +27,18 @@ package com.qiwumind.next.components.compute.core.dto;
 
 
 
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 
-@Data
+@Getter
+@Setter
+@ToString
+@EqualsAndHashCode
 @NoArgsConstructor
 public class DefaultRepaymentDayResult {
     private int defaultRepaymentDay;

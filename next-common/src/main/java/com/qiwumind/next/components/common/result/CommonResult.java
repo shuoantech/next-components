@@ -31,7 +31,11 @@ import com.qiwumind.next.components.common.exception.ServiceException;
 import com.qiwumind.next.components.common.exception.enums.GlobalErrorCodeConstants;
 import com.qiwumind.next.components.common.exception.util.ServiceExceptionUtil;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
+import lombok.EqualsAndHashCode;
+import lombok.RequiredArgsConstructor;
 
 import java.io.Serializable;
 import java.util.Objects;
@@ -41,7 +45,10 @@ import java.util.Objects;
  *
  * @param <T> 数据泛型
  */
-@Data
+@Getter
+@Setter
+@ToString
+@EqualsAndHashCode
 public class CommonResult<T> implements Serializable {
 
     /**

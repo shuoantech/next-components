@@ -25,7 +25,11 @@
 
 package com.qiwumind.next.components.wechat.autoconfigure;
 
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
+import lombok.EqualsAndHashCode;
+import lombok.RequiredArgsConstructor;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 import com.qiwumind.next.components.common.constant.SystemConstants;
@@ -34,7 +38,11 @@ import com.qiwumind.next.components.common.constant.SystemConstants;
  * 微信支付配置属性
  * 支持 API v2 和 v3
  */
-@Data
+@Getter
+@Setter
+@ToString
+@EqualsAndHashCode
+@RequiredArgsConstructor
 @ConfigurationProperties(prefix = SystemConstants.Prefix.ThirdParty.WECHAT_PAY)
 public class WechatPayProperties {
 

@@ -26,12 +26,20 @@
 package com.qiwumind.next.components.license.core.vo;
 
 import lombok.Builder;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
+import lombok.EqualsAndHashCode;
+import lombok.RequiredArgsConstructor;
+import lombok.experimental.Accessors;
 
 import java.util.List;
 
-@Data
-@Builder
+@Getter
+@Setter
+@ToString
+@EqualsAndHashCode
+@Accessors(chain  = true )
 public class LicenseBinding {
     private List<String> allowedIps;      // 允许的IP（支持CIDR）
     private List<String> allowedMacs;     // 允许的MAC地址

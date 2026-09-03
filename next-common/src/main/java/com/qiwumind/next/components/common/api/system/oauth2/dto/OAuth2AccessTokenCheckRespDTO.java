@@ -25,7 +25,12 @@
 
 package com.qiwumind.next.components.common.api.system.oauth2.dto;
 
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
+import lombok.EqualsAndHashCode;
+import lombok.RequiredArgsConstructor;
+import lombok.experimental.Accessors;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
@@ -37,7 +42,12 @@ import java.util.Map;
  *
  * @author 3070
  */
-@Data
+@Getter
+@Setter
+@ToString
+@EqualsAndHashCode
+@RequiredArgsConstructor
+@Accessors(chain = true)
 public class OAuth2AccessTokenCheckRespDTO implements Serializable {
 
     /**

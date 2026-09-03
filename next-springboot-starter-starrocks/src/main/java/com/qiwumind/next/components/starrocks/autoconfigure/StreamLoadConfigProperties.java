@@ -27,7 +27,10 @@ package com.qiwumind.next.components.starrocks.autoconfigure;
 
 
 
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
+import lombok.EqualsAndHashCode;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 import com.qiwumind.next.components.common.constant.SystemConstants;
@@ -36,7 +39,10 @@ import org.springframework.context.annotation.Configuration;
 import java.util.HashMap;
 import java.util.Map;
 
-@Data
+@Getter
+@Setter
+@ToString
+@EqualsAndHashCode
 @Configuration
 @ConfigurationProperties(prefix = SystemConstants.Prefix.StarRocks.CONFIG)
 public class StreamLoadConfigProperties {

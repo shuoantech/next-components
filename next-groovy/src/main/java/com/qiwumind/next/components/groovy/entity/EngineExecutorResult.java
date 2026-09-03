@@ -29,14 +29,20 @@ package com.qiwumind.next.components.groovy.entity;
 
 import com.qiwumind.next.components.groovy.constants.ExecutionStatus;
 
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
+import lombok.EqualsAndHashCode;
 
 /**
  * 脚本执行结果
  *
  * @author wenpan 2022/09/18 12:44
  */
-@Data
+@Getter
+@Setter
+@ToString
+@EqualsAndHashCode
 public class EngineExecutorResult {
 
     /**

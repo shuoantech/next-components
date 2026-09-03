@@ -28,7 +28,10 @@ package com.qiwumind.next.components.hologres.core.infra.config;
 import java.util.stream.Stream;
 
 import com.qiwumind.next.components.hologres.autoconfigure.DataSourceConfiguration;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
+import lombok.EqualsAndHashCode;
 import org.apache.commons.lang3.StringUtils;
 
 /**
@@ -38,7 +41,10 @@ import org.apache.commons.lang3.StringUtils;
  *
  * @author KS.Li
  */
-@Data
+@Getter
+@Setter
+@ToString
+@EqualsAndHashCode
 public class HoloClientConfig {
 
     private String deployEnv;
@@ -57,25 +63,24 @@ public class HoloClientConfig {
                 dataSourceConfiguration.getHoloConfig().getPort(),
                 dataSourceConfiguration.getDatabase());
 
-        DataSourceConfig.DataSourceConfigBuilder builder = DataSourceConfig.builder()
-                .url(url)
-                .username(dataSourceConfiguration.getUsername())
-                .password(dataSourceConfiguration.getPwd())
-                .pool(DataSourceConfig.DataSourceType.DruidCP);
+        DataSourceConfig dataSourceConfig = new DataSourceConfig()
+                .setUrl(url)
+                .setUsername(dataSourceConfiguration.getUsername())
+                .setPassword(dataSourceConfiguration.getPwd())
+                .setPool(DataSourceConfig.DataSourceType.DruidCP);
 
         // 测试及预发环境，限制最大连接数为 5
         if (env == null || env == Env.TEST || env == Env.PRE) {
             Integer maxPoolSize = dataSourceConfiguration.getMaxPoolSize();
-            builder.maxPoolSize((maxPoolSize != null && maxPoolSize > 5) ? 5 : maxPoolSize);
+            dataSourceConfig.setMaxPoolSize((maxPoolSize != null && maxPoolSize > 5) ? 5 : maxPoolSize);
         } else if (dataSourceConfiguration.getMaxPoolSize() != null) {
-            builder.maxPoolSize(dataSourceConfiguration.getMaxPoolSize());
+            dataSourceConfig.setMaxPoolSize(dataSourceConfiguration.getMaxPoolSize());
         }
 
         if (dataSourceConfiguration.getIdleTimeoutMilliseconds() != null) {
-            builder.idleTimeoutMilliseconds(dataSourceConfiguration.getIdleTimeoutMilliseconds());
+            dataSourceConfig.setIdleTimeoutMilliseconds(dataSourceConfiguration.getIdleTimeoutMilliseconds());
         }
-
-        config = builder.build();
+        this.config = dataSourceConfig;
     }
 
     /**

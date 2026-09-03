@@ -26,7 +26,11 @@
 package com.qiwumind.next.components.tenant.config;
 
 import com.qiwumind.next.components.common.constant.SystemConstants;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
+import lombok.EqualsAndHashCode;
+import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
@@ -40,7 +44,11 @@ import java.util.Set;
  */
 @ConfigurationProperties(prefix = SystemConstants.Prefix.TENANT) // 绑定 next.tenant.* 配置
 @ConditionalOnProperty(prefix = SystemConstants.Prefix.TENANT, value = "enable", matchIfMissing = true) // 允许使用 next.tenant.enable=false 禁用多租户
-@Data
+@Getter
+@Setter
+@ToString
+@EqualsAndHashCode
+@RequiredArgsConstructor
 public class TenantProperties {
 
     /**

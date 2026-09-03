@@ -26,14 +26,18 @@
 package com.qiwumind.next.components.common.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.RequiredArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
 import java.util.List;
 
 @Schema(description = "可排序的分页参数")
-@Data
+@Getter
+@Setter
+@RequiredArgsConstructor
 @EqualsAndHashCode(callSuper = true)
 @ToString(callSuper = true)
 public class SortablePageParam extends PageParam {

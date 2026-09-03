@@ -26,14 +26,22 @@
 package com.qiwumind.next.components.pricing.core.bo;
 
 import com.qiwumind.next.components.pricing.core.enums.ActivityEnum;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
+import lombok.EqualsAndHashCode;
+import lombok.RequiredArgsConstructor;
 
 import java.util.List;
 
 /**
  * 基础活动信息，所有活动类型（促销、优惠券、礼品卡、策略）共享。
  */
-@Data
+@Getter
+@Setter
+@ToString
+@EqualsAndHashCode
+@RequiredArgsConstructor
 public class ActivityBaseBO {
 
     /** 唯一活动编码 */

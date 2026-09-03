@@ -25,7 +25,11 @@
 
 package com.qiwumind.next.components.pdf.autoconfigure;
 
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
+import lombok.EqualsAndHashCode;
+import lombok.RequiredArgsConstructor;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 import com.qiwumind.next.components.common.constant.SystemConstants;
@@ -40,7 +44,11 @@ import java.util.List;
  *
  * @author qiwumind
  */
-@Data
+@Getter
+@Setter
+@ToString
+@EqualsAndHashCode
+@RequiredArgsConstructor
 @Validated
 @ConfigurationProperties(prefix = SystemConstants.Prefix.PDF)
 public class PdfProperties {
@@ -58,7 +66,11 @@ public class PdfProperties {
     /**
      * 字体相关配置
      */
-    @Data
+    @Getter
+    @Setter
+    @ToString
+    @EqualsAndHashCode
+    @RequiredArgsConstructor
     public static class Fonts {
 
         /**
@@ -80,7 +92,11 @@ public class PdfProperties {
     /**
      * 单个字体配置项
      */
-    @Data
+    @Getter
+    @Setter
+    @ToString
+    @EqualsAndHashCode
+    @RequiredArgsConstructor
     public static class FontItem {
 
         /**
@@ -103,7 +119,11 @@ public class PdfProperties {
     /**
      * PDF 导出相关配置
      */
-    @Data
+    @Getter
+    @Setter
+    @ToString
+    @EqualsAndHashCode
+    @RequiredArgsConstructor
     public static class Export {
 
         /**

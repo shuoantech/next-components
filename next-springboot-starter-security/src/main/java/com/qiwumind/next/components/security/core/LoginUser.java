@@ -28,7 +28,11 @@ package com.qiwumind.next.components.security.core;
 import cn.hutool.core.map.MapUtil;
 import com.qiwumind.next.components.common.enums.UserTypeEnum;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
+import lombok.EqualsAndHashCode;
+import lombok.RequiredArgsConstructor;
 
 import java.time.LocalDateTime;
 import java.util.HashMap;
@@ -39,7 +43,11 @@ import java.util.Map;
  * 登录用户信息
  * @author qiwumind
  */
-@Data
+@Getter
+@Setter
+@ToString
+@EqualsAndHashCode
+@RequiredArgsConstructor
 public class LoginUser {
 
     public static final String INFO_KEY_NICKNAME = "nickname";

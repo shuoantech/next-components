@@ -26,13 +26,17 @@
 package com.qiwumind.next.components.common.exception;
 
 import com.qiwumind.next.components.common.exception.enums.ServiceErrorCodeRange;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 import lombok.EqualsAndHashCode;
 
 /**
  * 业务逻辑异常 Exception
  */
-@Data
+@Getter
+@Setter
+@ToString
 @EqualsAndHashCode(callSuper = true)
 public final class ServiceException extends RuntimeException {
 

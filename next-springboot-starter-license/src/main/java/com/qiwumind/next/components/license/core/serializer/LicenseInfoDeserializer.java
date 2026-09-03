@@ -42,146 +42,146 @@ import java.util.*;
  * LicenseInfo 反序列化器
  */
 public class LicenseInfoDeserializer extends JsonDeserializer<LicenseInfo> {
-    
+
     private static final DateTimeFormatter DATE_FORMATTER =
-        DateTimeFormatter.ISO_ZONED_DATE_TIME;
-    
+            DateTimeFormatter.ISO_ZONED_DATE_TIME;
+
     @Override
     public LicenseInfo deserialize(JsonParser parser, DeserializationContext ctx)
             throws IOException {
-        
+
         JsonNode node = parser.getCodec().readTree(parser);
-        
-        var builder = LicenseInfo.builder();
-        
+
+        var builder = new LicenseInfo();
+
         // 基本字段
         if (node.has("licenseId") && !node.get("licenseId").isNull()) {
-            builder.licenseId(node.get("licenseId").asText());
+            builder.setLicenseId(node.get("licenseId").asText());
         }
-        
+
         if (node.has("subject")) {
-            builder.subject(node.get("subject").asText());
+            builder.setSubject(node.get("subject").asText());
         }
-        
+
         if (node.has("issuer")) {
-            builder.issuer(node.get("issuer").asText());
+            builder.setIssuer(node.get("issuer").asText());
         }
-        
+
         // 日期字段
         if (node.has("issueDate") && !node.get("issueDate").isNull()) {
-            builder.issueDate(ZonedDateTime.parse(
-                node.get("issueDate").asText(), DATE_FORMATTER));
+            builder.setIssueDate(ZonedDateTime.parse(
+                    node.get("issueDate").asText(), DATE_FORMATTER));
         }
-        
+
         if (node.has("expireDate") && !node.get("expireDate").isNull()) {
-            builder.expireDate(ZonedDateTime.parse(
-                node.get("expireDate").asText(), DATE_FORMATTER));
+            builder.setExpireDate(ZonedDateTime.parse(
+                    node.get("expireDate").asText(), DATE_FORMATTER));
         }
-        
+
         if (node.has("graceEndDate") && !node.get("graceEndDate").isNull()) {
-            builder.graceEndDate(ZonedDateTime.parse(
-                node.get("graceEndDate").asText(), DATE_FORMATTER));
+            builder.setGraceEndDate(ZonedDateTime.parse(
+                    node.get("graceEndDate").asText(), DATE_FORMATTER));
         }
-        
+
         // 功能模块
         if (node.has("features")) {
             Set<String> features = new HashSet<>();
             node.get("features").forEach(f -> features.add(f.asText()));
-            builder.features(features);
+            builder.setFeatures(features);
         }
-        
+
         // 绑定信息
         if (node.has("binding") && !node.get("binding").isNull()) {
-            builder.binding(deserializeBinding(node.get("binding")));
+            builder.setBinding(deserializeBinding(node.get("binding")));
         }
-        
+
         // 限制信息
         if (node.has("limits") && !node.get("limits").isNull()) {
-            builder.limits(deserializeLimits(node.get("limits")));
+            builder.setLimits(deserializeLimits(node.get("limits")));
         }
-        
+
         // 签名
         if (node.has("signature") && !node.get("signature").isNull()) {
-            builder.signature(node.get("signature").asText());
+            builder.setSignature(node.get("signature").asText());
         }
-        
+
         // 扩展信息
         if (node.has("extensions") && !node.get("extensions").isNull()) {
             Map<String, Object> extensions = new HashMap<>();
             node.get("extensions").fields()
-                .forEachRemaining(entry -> extensions.put(
-                    entry.getKey(), extractValue(entry.getValue())));
-            builder.extensions(extensions);
+                    .forEachRemaining(entry -> extensions.put(
+                            entry.getKey(), extractValue(entry.getValue())));
+            builder.setExtensions(extensions);
         }
-        
-        return builder.build();
+
+        return builder;
     }
-    
+
     private LicenseBinding deserializeBinding(JsonNode node) {
-        var bindingBuilder = LicenseBinding.builder();
-        
+        var bindingBuilder = new LicenseBinding();
+
         if (node.has("allowedIps")) {
             List<String> ips = new ArrayList<>();
             node.get("allowedIps").forEach(ip -> ips.add(ip.asText()));
-            bindingBuilder.allowedIps(ips);
+            bindingBuilder.setAllowedIps(ips);
         }
-        
+
         if (node.has("allowedMacs")) {
             List<String> macs = new ArrayList<>();
             node.get("allowedMacs").forEach(mac -> macs.add(mac.asText()));
-            bindingBuilder.allowedMacs(macs);
+            bindingBuilder.setAllowedMacs(macs);
         }
-        
+
         if (node.has("hardwareFingerprint")) {
-            bindingBuilder.hardwareFingerprint(
-                node.get("hardwareFingerprint").asText());
+            bindingBuilder.setHardwareFingerprint(
+                    node.get("hardwareFingerprint").asText());
         }
-        
+
         if (node.has("instanceId")) {
-            bindingBuilder.instanceId(node.get("instanceId").asText());
+            bindingBuilder.setInstanceId(node.get("instanceId").asText());
         }
-        
+
         if (node.has("allowedDomains")) {
             List<String> domains = new ArrayList<>();
             node.get("allowedDomains").forEach(domain -> domains.add(domain.asText()));
-            bindingBuilder.allowedDomains(domains);
+            bindingBuilder.setAllowedDomains(domains);
         }
-        
-        return bindingBuilder.build();
+
+        return bindingBuilder;
     }
-    
+
     private LicenseLimits deserializeLimits(JsonNode node) {
-        var limitsBuilder = LicenseLimits.builder();
-        
+        var limitsBuilder = new LicenseLimits();
+
         if (node.has("maxUsers")) {
-            limitsBuilder.maxUsers(node.get("maxUsers").asInt());
+            limitsBuilder.setMaxUsers(node.get("maxUsers").asInt());
         }
-        
+
         if (node.has("maxConnections")) {
-            limitsBuilder.maxConnections(node.get("maxConnections").asInt());
+            limitsBuilder.setMaxConnections(node.get("maxConnections").asInt());
         }
-        
+
         if (node.has("maxDataSize")) {
-            limitsBuilder.maxDataSize(node.get("maxDataSize").asLong());
+            limitsBuilder.setMaxDataSize(node.get("maxDataSize").asLong());
         }
-        
+
         if (node.has("allowedModules")) {
             Set<String> modules = new HashSet<>();
             node.get("allowedModules").forEach(m -> modules.add(m.asText()));
-            limitsBuilder.allowedModules(modules);
+            limitsBuilder.setAllowedModules(modules);
         }
-        
+
         if (node.has("custom")) {
             Map<String, Object> custom = new HashMap<>();
             node.get("custom").fields()
-                .forEachRemaining(entry -> custom.put(
-                    entry.getKey(), extractValue(entry.getValue())));
-            limitsBuilder.custom(custom);
+                    .forEachRemaining(entry -> custom.put(
+                            entry.getKey(), extractValue(entry.getValue())));
+            limitsBuilder.setCustom(custom);
         }
-        
-        return limitsBuilder.build();
+
+        return limitsBuilder;
     }
-    
+
     private Object extractValue(JsonNode node) {
         if (node.isTextual()) return node.asText();
         if (node.isInt()) return node.asInt();

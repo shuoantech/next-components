@@ -31,13 +31,19 @@ import org.apache.commons.lang3.StringUtils;
 
 import com.google.common.base.Preconditions;
 
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
+import lombok.EqualsAndHashCode;
 
 /**
  * ScriptEntry查询DTO
  *
  */
-@Data
+@Getter
+@Setter
+@ToString
+@EqualsAndHashCode
 public class ScriptQuery {
 
     /**

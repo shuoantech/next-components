@@ -26,15 +26,23 @@
 package com.qiwumind.next.components.hologres.core.infra.config;
 
 import lombok.Builder;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
+import lombok.EqualsAndHashCode;
+import lombok.RequiredArgsConstructor;
+import lombok.experimental.Accessors;
 
 /**
  * Hologres 数据源配置。
  *
  * @author KS.Li
  */
-@Data
-@Builder
+@Getter
+@Setter
+@ToString
+@EqualsAndHashCode
+@Accessors(chain = true)
 public class DataSourceConfig {
 
     private String url;
@@ -42,22 +50,15 @@ public class DataSourceConfig {
     private String password;
     private String dbname;
     private DataSourceType pool;
-    @Builder.Default
     private Integer minPoolSize = 1;
-    @Builder.Default
     private Integer maxPoolSize = 20;
-    @Builder.Default
     private String validationQuery = "select 1";
     /** 连接超时毫秒数 */
-    @Builder.Default
     private Long connectionTimeoutMilliseconds = 60000L;
     /** 连接最大存活时间毫秒数 */
-    @Builder.Default
     private Long maxLifetimeMilliseconds = 900000L;
     /** 空闲连接回收超时毫秒数 */
-    @Builder.Default
     private Long idleTimeoutMilliseconds = 120000L;
-    @Builder.Default
     private boolean keepAlive = true;
 
     /**

@@ -27,7 +27,10 @@ package com.qiwumind.next.components.starrocks.autoconfigure;
 
 
 
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.EqualsAndHashCode;
+import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
@@ -37,7 +40,11 @@ import org.springframework.context.annotation.Configuration;
 import java.util.List;
 import java.util.Random;
 
-@Data
+@Getter
+@Setter
+@ToString
+@EqualsAndHashCode
+@RequiredArgsConstructor
 @Configuration
 @ConfigurationProperties(prefix = SystemConstants.Prefix.StarRocks.CLUSTER)
 public class StarRocksClusterProperties {

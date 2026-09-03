@@ -25,7 +25,11 @@
 
 package com.qiwumind.next.components.tracer.config;
 
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
+import lombok.EqualsAndHashCode;
+import lombok.RequiredArgsConstructor;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 import com.qiwumind.next.components.common.constant.SystemConstants;
@@ -35,6 +39,10 @@ import com.qiwumind.next.components.common.constant.SystemConstants;
  * @author qiwumind 麻薯
  */
 @ConfigurationProperties(SystemConstants.Prefix.TRACER)
-@Data
+@Getter
+@Setter
+@ToString
+@EqualsAndHashCode
+@RequiredArgsConstructor
 public class TracerProperties {
 }

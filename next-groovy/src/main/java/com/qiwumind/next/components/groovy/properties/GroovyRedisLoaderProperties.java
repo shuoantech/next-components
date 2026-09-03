@@ -27,7 +27,11 @@ package com.qiwumind.next.components.groovy.properties;
 
 
 
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
+import lombok.EqualsAndHashCode;
+import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -40,7 +44,11 @@ import org.springframework.lang.NonNull;
 /**
  * GroovyRedisLoaderProperties
  */
-@Data
+@Getter
+@Setter
+@ToString
+@EqualsAndHashCode
+@RequiredArgsConstructor
 @ConfigurationProperties(prefix = SystemConstants.Prefix.Groovy.REDIS_LOADER)
 public class GroovyRedisLoaderProperties implements InitializingBean, EnvironmentAware {
 

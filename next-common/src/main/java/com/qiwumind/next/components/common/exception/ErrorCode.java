@@ -27,7 +27,10 @@ package com.qiwumind.next.components.common.exception;
 
 import com.qiwumind.next.components.common.exception.enums.GlobalErrorCodeConstants;
 import com.qiwumind.next.components.common.exception.enums.ServiceErrorCodeRange;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
+import lombok.EqualsAndHashCode;
 
 /**
  * 错误码对象
@@ -37,7 +40,10 @@ import lombok.Data;
  *
  * TODO 错误码设计成对象的原因，为未来的 i18 国际化做准备
  */
-@Data
+@Getter
+@Setter
+@ToString
+@EqualsAndHashCode
 public class ErrorCode {
 
     /**

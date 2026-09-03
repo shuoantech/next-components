@@ -26,14 +26,22 @@
 package com.qiwumind.next.components.common.api.system.dict.dto;
 
 import com.qiwumind.next.components.common.enums.CommonStatusEnum;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
+import lombok.EqualsAndHashCode;
+import lombok.RequiredArgsConstructor;
 
 /**
  * 字典数据 Response DTO
  *
  * @author 3070
  */
-@Data
+@Getter
+@Setter
+@ToString
+@EqualsAndHashCode
+@RequiredArgsConstructor
 public class DictDataRespDTO {
 
     /**

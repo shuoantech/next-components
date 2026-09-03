@@ -35,7 +35,10 @@ import com.qiwumind.next.components.datasecure.utils.SensitiveProcessUtils;
 
 import jakarta.annotation.PostConstruct;
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -43,7 +46,10 @@ import lombok.extern.slf4j.Slf4j;
  * @author Jun 8, 2017 3:28:15 PM
  */
 @Slf4j
-@Data
+@Getter
+@Setter
+@ToString
+@EqualsAndHashCode
 @AllArgsConstructor
 @NoArgsConstructor
 public class DataSecureConfig {

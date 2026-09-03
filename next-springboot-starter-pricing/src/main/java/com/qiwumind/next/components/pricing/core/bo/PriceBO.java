@@ -25,7 +25,11 @@
 
 package com.qiwumind.next.components.pricing.core.bo;
 
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
+import lombok.EqualsAndHashCode;
+import lombok.RequiredArgsConstructor;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -47,7 +51,11 @@ import java.util.List;
  * "中间商品"模式：在每次活动的规则执行前，商品状态被复制到 middleGoods。
  * 若规则执行成功，middleGoods 的变更通过 {@link #resetGoodsForMiddle()} 提交回正式商品列表。
  */
-@Data
+@Getter
+@Setter
+@ToString
+@EqualsAndHashCode
+@RequiredArgsConstructor
 public class PriceBO {
 
     // ==================== 商品 ====================

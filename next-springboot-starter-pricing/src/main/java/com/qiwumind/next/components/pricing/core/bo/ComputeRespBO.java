@@ -25,7 +25,11 @@
 
 package com.qiwumind.next.components.pricing.core.bo;
 
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
+import lombok.EqualsAndHashCode;
+import lombok.RequiredArgsConstructor;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,7 +37,11 @@ import java.util.List;
 /**
  * 计算结果 - 定价计算的最终输出。
  */
-@Data
+@Getter
+@Setter
+@ToString
+@EqualsAndHashCode
+@RequiredArgsConstructor
 public class ComputeRespBO {
 
     /** 原始总金额（单位：分） */

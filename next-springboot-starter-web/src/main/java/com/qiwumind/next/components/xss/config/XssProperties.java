@@ -25,7 +25,11 @@
 
 package com.qiwumind.next.components.xss.config;
 
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
+import lombok.EqualsAndHashCode;
+import lombok.RequiredArgsConstructor;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 import com.qiwumind.next.components.common.constant.SystemConstants;
@@ -40,7 +44,11 @@ import java.util.List;
  */
 @ConfigurationProperties(prefix = SystemConstants.Prefix.XSS)
 @Validated
-@Data
+@Getter
+@Setter
+@ToString
+@EqualsAndHashCode
+@RequiredArgsConstructor
 public class XssProperties {
 
     /**

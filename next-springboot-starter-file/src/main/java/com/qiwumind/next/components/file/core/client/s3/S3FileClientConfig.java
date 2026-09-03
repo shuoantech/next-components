@@ -5,14 +5,22 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.qiwumind.next.components.file.core.client.FileClientConfig;
 import jakarta.validation.constraints.AssertTrue;
 import jakarta.validation.constraints.NotNull;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
+import lombok.EqualsAndHashCode;
+import lombok.RequiredArgsConstructor;
 import org.hibernate.validator.constraints.URL;
 
 /**
  * S3 文件客户端的配置类
  * @author qiwumind
  */
-@Data
+@Getter
+@Setter
+@ToString
+@EqualsAndHashCode
+@RequiredArgsConstructor
 public class S3FileClientConfig implements FileClientConfig {
 
     public static final String ENDPOINT_QINIU = "qiniucs.com";

@@ -3,14 +3,22 @@ package com.qiwumind.next.components.file.core.client.ftp;
 import com.qiwumind.next.components.file.core.client.FileClientConfig;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
+import lombok.EqualsAndHashCode;
+import lombok.RequiredArgsConstructor;
 import org.hibernate.validator.constraints.URL;
 
 /**
  * Ftp 文件客户端的配置类
  * @author qiwumind
  */
-@Data
+@Getter
+@Setter
+@ToString
+@EqualsAndHashCode
+@RequiredArgsConstructor
 public class FtpFileClientConfig implements FileClientConfig {
 
     /**

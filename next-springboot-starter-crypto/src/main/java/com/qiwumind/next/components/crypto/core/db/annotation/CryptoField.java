@@ -39,7 +39,8 @@ import java.lang.annotation.Target;
  * </ul>
  *
  * <p>完全与业务代码解耦：只需在字段上标注本注解，无需修改任何 SQL / XML / Mapper。
- * 加解密算法复用 {@code com.qiwumind.next.components.crypto.core.Enc}（AES + enc_ 前缀）。
+ * 加解密算法复用 {@code next-common} 的 {@link com.qiwumind.next.components.common.util.crypto.Sm4Utils}
+ * （国密 SM4/CBC，密文前缀 {@code SM4:}）。
  */
 @Documented
 @Retention(RetentionPolicy.RUNTIME)

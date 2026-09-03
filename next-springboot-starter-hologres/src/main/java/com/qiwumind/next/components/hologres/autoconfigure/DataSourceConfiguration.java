@@ -27,7 +27,11 @@ package com.qiwumind.next.components.hologres.autoconfigure;
 
 import java.time.Duration;
 
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
+import lombok.EqualsAndHashCode;
+import lombok.RequiredArgsConstructor;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
@@ -51,7 +55,11 @@ import org.springframework.validation.annotation.Validated;
  *
  * @author KS.Li
  */
-@Data
+@Getter
+@Setter
+@ToString
+@EqualsAndHashCode
+@RequiredArgsConstructor
 @Validated
 @ConfigurationProperties(prefix = SystemConstants.Prefix.HOLOGRES)
 public class DataSourceConfiguration {
@@ -75,7 +83,11 @@ public class DataSourceConfiguration {
     private Duration idleTimeout;
     private HoloConfig holoConfig;
 
-    @Data
+    @Getter
+    @Setter
+    @ToString
+    @EqualsAndHashCode
+    @RequiredArgsConstructor
     public static class HoloConfig {
         private String url;
         private int port = 80;

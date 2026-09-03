@@ -26,7 +26,11 @@
 package com.qiwumind.next.components.datapermission.config;
 
 import com.qiwumind.next.components.common.constant.SystemConstants;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
+import lombok.EqualsAndHashCode;
+import lombok.RequiredArgsConstructor;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
@@ -40,7 +44,11 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * @author qiwumind
  */
 @ConfigurationProperties(prefix = SystemConstants.Prefix.DATA_PERMISSION)
-@Data
+@Getter
+@Setter
+@ToString
+@EqualsAndHashCode
+@RequiredArgsConstructor
 public class DataPermissionProperties {
 
     /**

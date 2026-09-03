@@ -26,13 +26,21 @@
 package com.qiwumind.next.components.license.core.vo;
 
 import lombok.Builder;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
+import lombok.EqualsAndHashCode;
+import lombok.RequiredArgsConstructor;
+import lombok.experimental.Accessors;
 
 import java.util.Map;
 import java.util.Set;
 
-@Data
-@Builder
+@Getter
+@Setter
+@ToString
+@EqualsAndHashCode
+@Accessors(chain  = true )
 public class LicenseLimits {
     private Integer maxUsers;              // 最大用户数
     private Integer maxConnections;        // 最大连接数

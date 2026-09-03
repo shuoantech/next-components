@@ -27,6 +27,7 @@ package com.qiwumind.next.components.common.api.infra.logger;
 
 import com.qiwumind.next.components.common.api.infra.logger.dto.ApiErrorLogCreateReqDTO;
 
+import com.qiwumind.next.components.common.util.event.EventBusUtils;
 import jakarta.validation.Valid;
 import org.springframework.scheduling.annotation.Async;
 
@@ -49,7 +50,6 @@ public interface ApiErrorLogCommonApi {
      *
      * @param createDTO 异常日志 DTO
      */
-    @Async
     default void createApiErrorLogAsync(ApiErrorLogCreateReqDTO createDTO) {
         createApiErrorLog(createDTO);
     }

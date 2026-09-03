@@ -26,7 +26,11 @@
 package com.qiwumind.next.components.common.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
+import lombok.EqualsAndHashCode;
+import lombok.RequiredArgsConstructor;
 
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.Max;
@@ -34,7 +38,11 @@ import jakarta.validation.constraints.NotNull;
 import java.io.Serializable;
 
 @Schema(description="分页参数")
-@Data
+@Getter
+@Setter
+@ToString
+@EqualsAndHashCode
+@RequiredArgsConstructor
 public class PageParam implements Serializable {
 
     private static final Integer PAGE_NO = 1;

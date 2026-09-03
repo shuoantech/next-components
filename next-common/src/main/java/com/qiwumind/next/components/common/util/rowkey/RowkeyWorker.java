@@ -30,7 +30,7 @@ package com.qiwumind.next.components.common.util.rowkey;
 import java.security.MessageDigest;
 import java.util.Date;
 
-import javax.xml.bind.DatatypeConverter;
+import java.util.HexFormat;
 
 public class RowkeyWorker {
     /**
@@ -96,7 +96,7 @@ public class RowkeyWorker {
             messageDigest = MessageDigest.getInstance("MD5");
             messageDigest.update(encryptStr.getBytes());
             byte[] digiest = messageDigest.digest();
-            encryptStr = DatatypeConverter.printHexBinary(digiest);
+            encryptStr = HexFormat.of().withUpperCase().formatHex(digiest);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

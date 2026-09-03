@@ -26,14 +26,18 @@
 package com.qiwumind.next.components.wechat.core.dto;
 
 import lombok.*;
+import lombok.experimental.Accessors;
 
 /**
  * 微信APP支付参数DTO
  */
-@Data
-@Builder
+@Getter
+@Setter
+@ToString
+@EqualsAndHashCode
 @NoArgsConstructor
 @AllArgsConstructor
+@Accessors(chain = true)
 public class WxAppPayParams {
     
     private String partnerId;

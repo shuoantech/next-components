@@ -1,0 +1,43 @@
+# License 配置（优先级低于注解）
+next:
+  license:
+    enabled: true
+    validate-on-startup: true
+    public-key-path: classpath:license/public_key.der
+    license-file-path: classpath:license/license.dat
+    hardware-validation: true
+    expiry-validation: true
+    signature-validation: true
+    management-enabled: true  # 启用管理接口
+    error-message: 授权已过期或无效，请联系管理员
+    exclude-paths:
+      - /actuator/**
+      - /license/**
+      - /public/**
+      - /swagger-ui/**
+      - /v3/api-docs/**
+
+  # ===== 数据源密码加密（next-springboot-starter-crypto）=====
+  # 启动阶段由 DatasourceCryptoEnvironmentPostProcessor 自动解密
+  # spring.datasource.password（及所有 *.password）密文为高优先级明文，连接池无需改动。
+  # 密文格式 enc_<DEPLOY_ENV>_xxx，生成密文须与运行实例的 DEPLOY_ENV 一致（默认 test）。
+  crypto:
+    datasource:
+      enabled: true                       # 默认开启；false 则关闭解密（明文直连）
+      # password-keys: spring.datasource.druid.password   # 额外需解密的密码属性 key（逗号分隔，可选）
+
+# 单数据源：密码以密文保存
+# 生成密文：运行 Enc.encryptData("明文密码") 得到 enc_test_xxx（DEPLOY_ENV 默认 test）
+spring:
+  datasource:
+    password: enc_test_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+
+# 多数据源（dynamic-datasource）示例：任意 *.password 都会被自动识别并解密
+#spring:
+#  datasource:
+#    dynamic:
+#      datasource:
+#        master:
+#          password: enc_test_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+#        slave:
+#          password: enc_test_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx

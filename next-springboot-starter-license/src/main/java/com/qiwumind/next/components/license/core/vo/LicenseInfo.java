@@ -33,6 +33,7 @@ import com.qiwumind.next.components.license.core.serializer.LicenseInfoSerialize
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
+import lombok.experimental.Accessors;
 
 import java.time.ZonedDateTime;
 import java.util.Map;
@@ -43,8 +44,11 @@ import java.util.Set;
 /**
  * License数据模型
  */
-@Data
-@Builder
+@Getter
+@Setter
+@ToString
+@EqualsAndHashCode
+@Accessors(chain = true)
 @NoArgsConstructor
 @AllArgsConstructor
 @JsonSerialize(using = LicenseInfoSerializer.class)

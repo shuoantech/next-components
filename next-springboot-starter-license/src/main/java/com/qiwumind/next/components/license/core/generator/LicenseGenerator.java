@@ -45,13 +45,11 @@ public class LicenseGenerator {
         this.signatureProvider = signatureProvider;
     }
 
-    public LicenseInfo generate(LicenseInfo.LicenseInfoBuilder builder) {
-        LicenseInfo license = builder
-                .licenseId(UUID.randomUUID().toString())
-                .issueDate(ZonedDateTime.now())
-                .build();
+    public LicenseInfo generate(LicenseInfo licenseInfo) {
+        licenseInfo.setLicenseId(UUID.randomUUID().toString())
+                .setIssueDate(ZonedDateTime.now());
 
-        return signLicense(license);
+        return signLicense(licenseInfo);
     }
 
     public LicenseInfo signLicense(LicenseInfo license) {
@@ -65,19 +63,18 @@ public class LicenseGenerator {
             String verifyJson = verifySerializer.toJsonForSigning(license);
             String signature = signatureProvider.signBase64(verifyJson.getBytes());
 
-            return LicenseInfo.builder()
-                    .licenseId(license.getLicenseId())
-                    .subject(license.getSubject())
-                    .issuer(license.getIssuer())
-                    .issueDate(license.getIssueDate())
-                    .expireDate(license.getExpireDate())
-                    .graceEndDate(license.getGraceEndDate())
-                    .features(license.getFeatures())
-                    .binding(license.getBinding())
-                    .limits(license.getLimits())
-                    .signature(signature)
-                    .extensions(license.getExtensions())
-                    .build();
+            return new LicenseInfo()
+                    .setLicenseId(license.getLicenseId())
+                    .setSubject(license.getSubject())
+                    .setIssuer(license.getIssuer())
+                    .setIssueDate(license.getIssueDate())
+                    .setExpireDate(license.getExpireDate())
+                    .setGraceEndDate(license.getGraceEndDate())
+                    .setFeatures(license.getFeatures())
+                    .setBinding(license.getBinding())
+                    .setLimits(license.getLimits())
+                    .setSignature(signature)
+                    .setExtensions(license.getExtensions());
 
         } catch (SignatureException | InvalidKeyException e) {
             log.error("签名License失败", e);
@@ -95,9 +92,9 @@ public class LicenseGenerator {
     }
 
     public LicenseInfo generateTrialLicense(String subject, int days) {
-        return generate(LicenseInfo.builder()
-                .subject(subject)
-                .issuer("System")
-                .expireDate(ZonedDateTime.now().plusDays(days)));
+        return generate(new LicenseInfo()
+                .setSubject(subject)
+                .setIssuer("System")
+                .setExpireDate(ZonedDateTime.now().plusDays(days)));
     }
 }

@@ -27,9 +27,15 @@ package com.qiwumind.next.components.common.api.system.oauth2.dto;
 
 import com.qiwumind.next.components.common.enums.UserTypeEnum;
 import com.qiwumind.next.components.common.validation.InEnum;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
+import lombok.EqualsAndHashCode;
+import lombok.RequiredArgsConstructor;
 
 import jakarta.validation.constraints.NotNull;
+import lombok.experimental.Accessors;
+
 import java.io.Serializable;
 import java.util.List;
 
@@ -38,7 +44,12 @@ import java.util.List;
  *
  * @author 3070
  */
-@Data
+@Getter
+@Setter
+@ToString
+@EqualsAndHashCode
+@RequiredArgsConstructor
+@Accessors(chain = true)
 public class OAuth2AccessTokenCreateReqDTO implements Serializable {
 
     /**

@@ -25,7 +25,11 @@
 
 package com.qiwumind.next.components.redis.config;
 
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
+import lombok.EqualsAndHashCode;
+import lombok.RequiredArgsConstructor;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 import com.qiwumind.next.components.common.constant.SystemConstants;
@@ -36,7 +40,11 @@ import org.springframework.validation.annotation.Validated;
  * @author qiwumind Wanwan
  */
 @ConfigurationProperties(SystemConstants.Prefix.CACHE)
-@Data
+@Getter
+@Setter
+@ToString
+@EqualsAndHashCode
+@RequiredArgsConstructor
 @Validated
 public class QiwumindCacheProperties {
 

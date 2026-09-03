@@ -30,7 +30,11 @@ package com.qiwumind.next.components.datasecure.logback;
 import com.alibaba.fastjson2.annotation.JSONField;
 import com.qiwumind.next.components.datasecure.common.enums.SensitiveRulesEnum;
 
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
+import lombok.EqualsAndHashCode;
+import lombok.RequiredArgsConstructor;
 
 /**
  * 敏感信息过滤规则
@@ -38,7 +42,11 @@ import lombok.Data;
  * @author chenyao
  * @since 2019年1月29日 下午3:12:34
  */
-@Data
+@Getter
+@Setter
+@ToString
+@EqualsAndHashCode
+@RequiredArgsConstructor
 public class SensitiveDataRule {
     /**
      * 过滤的字段名

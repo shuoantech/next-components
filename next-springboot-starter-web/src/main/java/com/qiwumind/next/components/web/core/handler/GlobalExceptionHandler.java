@@ -69,6 +69,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
 
 import static com.qiwumind.next.components.common.exception.enums.GlobalErrorCodeConstants.*;
 
@@ -360,7 +361,9 @@ public class GlobalExceptionHandler {
             // 初始化 errorLog
             buildExceptionLog(errorLog, req, e);
             // 执行插入 errorLog
-            apiErrorLogApi.createApiErrorLogAsync(errorLog);
+            CompletableFuture.runAsync(() -> {
+                apiErrorLogApi.createApiErrorLogAsync(errorLog);
+            });
         } catch (Throwable th) {
             log.error("[createExceptionLog][url({}) log({}) 发生异常]", req.getRequestURI(),  JsonUtils.toJsonString(errorLog), th);
         }

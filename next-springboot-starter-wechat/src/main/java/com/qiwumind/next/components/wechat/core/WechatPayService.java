@@ -117,13 +117,12 @@ public class WechatPayService {
             log.info("{}支付下单成功: outTradeNo={}, prepayId={}",
                     payType.getDescription(), payRequest.getOutTradeNo(), wxResult.getPrepayId());
 
-            return Result.success(PayResult.builder()
-                    .payType(payType)
-                    .prepayId(wxResult.getPrepayId())
-                    .payParams(payParams)
-                    .mwebUrl(wxResult.getMwebUrl())
-                    .codeUrl(wxResult.getCodeURL())
-                    .build());
+            return Result.success(new PayResult()
+                    .setPayType(payType)
+                    .setPrepayId(wxResult.getPrepayId())
+                    .setPayParams(payParams)
+                    .setMwebUrl(wxResult.getMwebUrl())
+                    .setCodeUrl(wxResult.getCodeURL()));
 
         } catch (WxPayException e) {
             log.error("{}支付下单异常: outTradeNo={}, error={}",
@@ -204,11 +203,10 @@ public class WechatPayService {
         String timestamp = generateTimestamp();
         String nonceStr = generateNonceStr();
 
-        WxAppPayParams appPayParams = WxAppPayParams.builder()
-                .partnerId(wxPayConfig.getMchId())
-                .prepayId(prepayId)
-                .timestamp(timestamp)
-                .build();
+        WxAppPayParams appPayParams = new WxAppPayParams()
+                .setPartnerId(wxPayConfig.getMchId())
+                .setPrepayId(prepayId)
+                .setTimestamp(timestamp);
 
         // ===== 修复：使用 TreeMap 确保参数按字典序排序 =====
         Map<String, String> signMap = new TreeMap<>();
@@ -452,9 +450,10 @@ public class WechatPayService {
 
     /**
      * 子类集成实现即可
+     *
      * @param notifyResult
      */
-    public void processWxPaySuccess(WxPayOrderNotifyResult notifyResult){
+    public void processWxPaySuccess(WxPayOrderNotifyResult notifyResult) {
 
     }
 

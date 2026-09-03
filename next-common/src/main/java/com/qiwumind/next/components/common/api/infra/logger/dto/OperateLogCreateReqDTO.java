@@ -23,19 +23,27 @@
  * Email: 307039176@qq.com
  */
 
-package com.qiwumind.next.components.common.api.system.logger.dto;
+package com.qiwumind.next.components.common.api.infra.logger.dto;
 
 import com.qiwumind.next.components.common.enums.UserTypeEnum;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
+import lombok.EqualsAndHashCode;
+import lombok.RequiredArgsConstructor;
 
 /**
  * 系统操作日志 Create Request DTO
  *
  * @author HUIHUI
  */
-@Data
+@Getter
+@Setter
+@ToString
+@EqualsAndHashCode
+@RequiredArgsConstructor
 public class OperateLogCreateReqDTO {
 
     /**

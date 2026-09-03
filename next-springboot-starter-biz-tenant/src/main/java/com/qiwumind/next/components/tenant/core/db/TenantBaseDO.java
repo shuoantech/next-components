@@ -26,14 +26,20 @@
 package com.qiwumind.next.components.tenant.core.db;
 
 import com.qiwumind.next.components.mybatis.core.dataobject.BaseDO;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
+import lombok.RequiredArgsConstructor;
 import lombok.EqualsAndHashCode;
 
 /**
  * 拓展多租户的 BaseDO 基类
  * @author qiwumind
  */
-@Data
+@Getter
+@Setter
+@ToString
+@RequiredArgsConstructor
 @EqualsAndHashCode(callSuper = true)
 public abstract class TenantBaseDO extends BaseDO {
 

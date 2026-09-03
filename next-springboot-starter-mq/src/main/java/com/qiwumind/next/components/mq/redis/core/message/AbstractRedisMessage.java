@@ -25,7 +25,11 @@
 
 package com.qiwumind.next.components.mq.redis.core.message;
 
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
+import lombok.EqualsAndHashCode;
+import lombok.RequiredArgsConstructor;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -34,7 +38,11 @@ import java.util.Map;
  * Redis 消息抽象基类
  * @author qiwumind
  */
-@Data
+@Getter
+@Setter
+@ToString
+@EqualsAndHashCode
+@RequiredArgsConstructor
 public abstract class AbstractRedisMessage {
 
     /**

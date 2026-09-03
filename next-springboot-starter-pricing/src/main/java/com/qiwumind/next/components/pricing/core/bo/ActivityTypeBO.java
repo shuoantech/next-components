@@ -27,13 +27,19 @@ package com.qiwumind.next.components.pricing.core.bo;
 
 import com.qiwumind.next.components.pricing.core.enums.ActivityEnum;
 import com.qiwumind.next.components.pricing.core.enums.PromotionTypeEnum;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
+import lombok.EqualsAndHashCode;
 
 /**
  * 活动类型描述符 - 封装 ActivityEnum 和 PromotionTypeEnum。
  * 提供类型检查的便捷方法。
  */
-@Data
+@Getter
+@Setter
+@ToString
+@EqualsAndHashCode
 public class ActivityTypeBO {
 
     private ActivityEnum activityEnum;

@@ -25,7 +25,11 @@
 
 package com.qiwumind.next.components.pricing.core.bo;
 
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
+import lombok.EqualsAndHashCode;
+import lombok.RequiredArgsConstructor;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -37,7 +41,11 @@ import java.util.List;
  * {@code computeAmount} 是动态计算的应付金额，随着促销/优惠券的叠加应用而逐步减少。
  * 初始值等于 {@code saleAmount}，之后递减。
  */
-@Data
+@Getter
+@Setter
+@ToString
+@EqualsAndHashCode
+@RequiredArgsConstructor
 public class GoodsBO implements Comparable<GoodsBO> {
 
     /** 商品 ID */

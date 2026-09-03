@@ -34,12 +34,18 @@ import org.springframework.lang.NonNull;
 import com.google.common.base.Joiner;
 import com.qiwumind.next.components.groovy.properties.GroovyMysqlLoaderProperties;
 
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
+import lombok.EqualsAndHashCode;
 
 /**
  * groovy脚本表（表名：enhance_groovy_script）
  */
-@Data
+@Getter
+@Setter
+@ToString
+@EqualsAndHashCode
 public class EnhanceGroovyScript {
     /**
      * key分隔符

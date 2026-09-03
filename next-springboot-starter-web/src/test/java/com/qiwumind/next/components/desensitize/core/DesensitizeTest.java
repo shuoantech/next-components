@@ -30,7 +30,11 @@ import com.qiwumind.next.components.desensitize.core.annotation.Address;
 import com.qiwumind.next.components.desensitize.core.regex.annotation.EmailDesensitize;
 import com.qiwumind.next.components.desensitize.core.regex.annotation.RegexDesensitize;
 import com.qiwumind.next.components.desensitize.core.slider.annotation.*;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
+import lombok.EqualsAndHashCode;
+import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -83,7 +87,11 @@ public class DesensitizeTest {
         assertEquals("", d.getOrigin());
     }
 
-    @Data
+    @Getter
+    @Setter
+    @ToString
+    @EqualsAndHashCode
+    @RequiredArgsConstructor
     public static class DesensitizeDemo {
 
         @ChineseNameDesensitize

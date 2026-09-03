@@ -25,7 +25,10 @@
 
 package com.qiwumind.next.components.common.api.system.permission.dto;
 
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
+import lombok.EqualsAndHashCode;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -35,7 +38,10 @@ import java.util.Set;
  *
  * @author 3070
  */
-@Data
+@Getter
+@Setter
+@ToString
+@EqualsAndHashCode
 public class DeptDataPermissionRespDTO {
 
     /**
