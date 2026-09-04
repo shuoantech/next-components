@@ -44,7 +44,7 @@ import jakarta.validation.constraints.NotEmpty;
 @Getter
 @Setter
 @ToString
-@EqualsAndHashCode
+@EqualsAndHashCode(callSuper = false)
 @RequiredArgsConstructor
 public class SwaggerProperties {
 

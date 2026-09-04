@@ -43,7 +43,7 @@ import org.springframework.context.annotation.Configuration;
 @Getter
 @Setter
 @ToString
-@EqualsAndHashCode
+@EqualsAndHashCode(callSuper = false)
 @RequiredArgsConstructor
 @Configuration
 @ConfigurationProperties(SystemConstants.Prefix.ThirdParty.WECHAT_MP)
@@ -76,7 +76,7 @@ public class WxMpProperties {
     @Getter
     @Setter
     @ToString
-    @EqualsAndHashCode
+    @EqualsAndHashCode(callSuper = false)
     @RequiredArgsConstructor
     public static class TemplateId {
         private String paySuccess;
@@ -87,7 +87,7 @@ public class WxMpProperties {
     @Getter
     @Setter
     @ToString
-    @EqualsAndHashCode
+    @EqualsAndHashCode(callSuper = false)
     @RequiredArgsConstructor
     public static class Url {
         private String orderDetail;

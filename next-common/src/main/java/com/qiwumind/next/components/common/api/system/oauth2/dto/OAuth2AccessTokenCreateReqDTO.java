@@ -47,7 +47,7 @@ import java.util.List;
 @Getter
 @Setter
 @ToString
-@EqualsAndHashCode
+@EqualsAndHashCode(callSuper = false)
 @RequiredArgsConstructor
 @Accessors(chain = true)
 public class OAuth2AccessTokenCreateReqDTO implements Serializable {

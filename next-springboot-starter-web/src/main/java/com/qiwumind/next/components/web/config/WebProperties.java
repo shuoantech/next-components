@@ -47,7 +47,7 @@ import jakarta.validation.constraints.NotNull;
 @Getter
 @Setter
 @ToString
-@EqualsAndHashCode
+@EqualsAndHashCode(callSuper = false)
 @RequiredArgsConstructor
 public class WebProperties {
 
@@ -62,7 +62,7 @@ public class WebProperties {
     @Getter
     @Setter
     @ToString
-    @EqualsAndHashCode
+    @EqualsAndHashCode(callSuper = false)
     @AllArgsConstructor
     @NoArgsConstructor
     @Valid
@@ -89,7 +89,7 @@ public class WebProperties {
     @Getter
     @Setter
     @ToString
-    @EqualsAndHashCode
+    @EqualsAndHashCode(callSuper = false)
     @RequiredArgsConstructor
     @Valid
     public static class Ui {

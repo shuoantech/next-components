@@ -43,7 +43,7 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @ToString
-@EqualsAndHashCode
+@EqualsAndHashCode(callSuper = false)
 @RequiredArgsConstructor
 @Accessors(chain = true)
 public class OAuth2AccessTokenRespDTO implements Serializable {

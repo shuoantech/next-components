@@ -43,7 +43,7 @@ import lombok.ToString;
  */
 @Setter
 @Getter
-@EqualsAndHashCode
+@EqualsAndHashCode(callSuper = false)
 @ToString
 public class ScriptEntry {
     /**

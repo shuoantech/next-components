@@ -43,7 +43,7 @@ import java.util.Random;
 @Getter
 @Setter
 @ToString
-@EqualsAndHashCode
+@EqualsAndHashCode(callSuper = false)
 @RequiredArgsConstructor
 @Configuration
 @ConfigurationProperties(prefix = SystemConstants.Prefix.StarRocks.CLUSTER)

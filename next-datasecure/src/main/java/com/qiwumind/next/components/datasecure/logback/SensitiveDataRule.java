@@ -40,12 +40,12 @@ import lombok.RequiredArgsConstructor;
  * 敏感信息过滤规则
  *
  * @author chenyao
- * @since 2019年1月29日 下午3:12:34
+ * @since 2026年8月
  */
 @Getter
 @Setter
 @ToString
-@EqualsAndHashCode
+@EqualsAndHashCode(callSuper = false)
 @RequiredArgsConstructor
 public class SensitiveDataRule {
     /**

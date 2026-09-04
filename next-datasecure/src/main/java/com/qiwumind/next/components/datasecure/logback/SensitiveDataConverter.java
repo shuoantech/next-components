@@ -40,7 +40,7 @@ import ch.qos.logback.classic.spi.ILoggingEvent;
  * 敏感信息数据转换器
  *
  * @author chenyao
- * @since 2019年1月21日 下午6:03:20
+ * @since 2026年8月
  */
 public class SensitiveDataConverter extends MessageConverter {
     

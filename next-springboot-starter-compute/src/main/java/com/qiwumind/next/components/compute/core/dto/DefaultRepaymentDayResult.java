@@ -38,7 +38,7 @@ import java.time.LocalDate;
 @Getter
 @Setter
 @ToString
-@EqualsAndHashCode
+@EqualsAndHashCode(callSuper = false)
 @NoArgsConstructor
 public class DefaultRepaymentDayResult {
     private int defaultRepaymentDay;

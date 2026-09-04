@@ -39,7 +39,7 @@ import lombok.EqualsAndHashCode;
 @Getter
 @Setter
 @ToString
-@EqualsAndHashCode
+@EqualsAndHashCode(callSuper = false)
 public class DiscountBO {
 
     /** 活动枚举类型 */

@@ -41,7 +41,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @Setter
 @ToString
-@EqualsAndHashCode
+@EqualsAndHashCode(callSuper = false)
 @AllArgsConstructor
 @NoArgsConstructor
 public class EncryptType {

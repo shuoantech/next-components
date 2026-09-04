@@ -48,7 +48,7 @@ import java.util.Objects;
 @Getter
 @Setter
 @ToString
-@EqualsAndHashCode
+@EqualsAndHashCode(callSuper = false)
 public class CommonResult<T> implements Serializable {
 
     /**

@@ -25,191 +25,88 @@
 
 package com.qiwumind.next.components.redis.autoconfigure;
 
-
-
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-
-import com.qiwumind.next.components.common.constant.SystemConstants;
 
 import java.time.Duration;
 
 /**
+ * Redis 连接配置项。
+ * <p>
+ * 前缀与 Spring Boot 3 官方 {@code spring.data.redis} 完全对齐（收口为一份配置）：
+ * 本组件与官方自动配置（RedisConnectionFactory 等）读同一份连接信息；
+ * 当前实现仅支持单机/代理模式（阿里云标准版、集群版代理地址均为此模式），
+ * sentinel/cluster 配置项会被本组件忽略。
+ *
  * @author 云redis 2021年3月23日 下午12:38:57
  */
 @Setter
 @Getter
-@ConfigurationProperties(prefix = SystemConstants.Prefix.REDIS)
+@ToString(exclude = {"password", "url", "username"})
+@ConfigurationProperties(prefix = "spring.data.redis")
 public class RedisConfiguration {
-    private boolean vpc = true;
-//    private String  username;
-    // 连接方式1: 使用URI
+
+    /** 连接方式1: 使用 URI（如 redis://:password@host:6379/0），与官方 spring.data.redis.url 同义 */
     private String url;
-    // 连接方式2: 分离配置
+
+    /** 连接方式2: 分离配置 */
     private String host = "localhost";
     private int port = 6379;
+
+    /** Redis 6 ACL 用户名（阿里云"自定义账号"也填这里），默认账号留空 */
+    private String username;
+
+    /** 密码；阿里云自定义账号也可用 "账号:密码" 格式（由 Redis 服务端兼容） */
     private String password;
+
     private Integer database = 0;
-    private boolean ssl = false;
-    private int timeout = 2000; // 毫秒
+
+    /** SSL/TLS 配置（与官方 spring.data.redis.ssl 对象结构对齐，yaml 写法为 ssl.enabled: true，不要写 ssl: true/false） */
+    private Ssl ssl = new Ssl();
+
+    /** 连接/命令超时，Lettuce 与 Redisson 共用（与官方 spring.data.redis.timeout 同为 Duration） */
+    private Duration timeout = Duration.ofSeconds(5);
+
     private String clientName;
 
-    // Lettuce连接池配置
+    /** Lettuce 连接池配置（与官方 spring.data.redis.lettuce.pool 结构一致） */
     private Lettuce lettuce = new Lettuce();
 
-    // 静态内部类：Lettuce配置
+    /** 是否启用 SSL/TLS */
+    public boolean isSslEnabled() {
+        return ssl != null && Boolean.TRUE.equals(ssl.getEnabled());
+    }
+
+    @Setter
+    @Getter
+    public static class Ssl {
+        /** 是否启用 SSL/TLS */
+        private Boolean enabled = false;
+    }
+
+    @Setter
+    @Getter
     public static class Lettuce {
+
         private Pool pool = new Pool();
+
         private Duration shutdownTimeout = Duration.ofMillis(100);
 
+        @Setter
+        @Getter
         public static class Pool {
+            /** 最大连接数 */
             private int maxActive = 8;
+            /** 最大空闲连接数 */
             private int maxIdle = 8;
+            /** 最小空闲连接数 */
             private int minIdle = 0;
+            /** 获取连接最大等待时间，-1 表示无限等待 */
             private Duration maxWait = Duration.ofMillis(-1);
+            /** 空闲连接回收检查周期，null 表示使用默认值 */
             private Duration timeBetweenEvictionRuns;
-
-            // getters and setters
-            public int getMaxActive() {
-                return maxActive;
-            }
-
-            public void setMaxActive(int maxActive) {
-                this.maxActive = maxActive;
-            }
-
-            public int getMaxIdle() {
-                return maxIdle;
-            }
-
-            public void setMaxIdle(int maxIdle) {
-                this.maxIdle = maxIdle;
-            }
-
-            public int getMinIdle() {
-                return minIdle;
-            }
-
-            public void setMinIdle(int minIdle) {
-                this.minIdle = minIdle;
-            }
-
-            public Duration getMaxWait() {
-                return maxWait;
-            }
-
-            public void setMaxWait(Duration maxWait) {
-                this.maxWait = maxWait;
-            }
-
-            public Duration getTimeBetweenEvictionRuns() {
-                return timeBetweenEvictionRuns;
-            }
-
-            public void setTimeBetweenEvictionRuns(Duration timeBetweenEvictionRuns) {
-                this.timeBetweenEvictionRuns = timeBetweenEvictionRuns;
-            }
         }
-
-        public Pool getPool() {
-            return pool;
-        }
-
-        public void setPool(Pool pool) {
-            this.pool = pool;
-        }
-
-        public Duration getShutdownTimeout() {
-            return shutdownTimeout;
-        }
-
-        public void setShutdownTimeout(Duration shutdownTimeout) {
-            this.shutdownTimeout = shutdownTimeout;
-        }
-    }
-
-    // getters and setters
-    public String getUrl() {
-        return url;
-    }
-
-    public void setUrl(String url) {
-        this.url = url;
-    }
-
-    public String getHost() {
-        return host;
-    }
-
-    public void setHost(String host) {
-        this.host = host;
-    }
-
-    public int getPort() {
-        return port;
-    }
-
-    public void setPort(int port) {
-        this.port = port;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public Integer getDatabase() {
-        return database;
-    }
-
-    public void setDatabase(Integer database) {
-        this.database = database;
-    }
-
-    public boolean isSsl() {
-        return ssl;
-    }
-
-    public void setSsl(boolean ssl) {
-        this.ssl = ssl;
-    }
-
-    public int getTimeout() {
-        return timeout;
-    }
-
-    public void setTimeout(int timeout) {
-        this.timeout = timeout;
-    }
-
-    public String getClientName() {
-        return clientName;
-    }
-
-    public void setClientName(String clientName) {
-        this.clientName = clientName;
-    }
-
-    public Lettuce getLettuce() {
-        return lettuce;
-    }
-
-    public void setLettuce(Lettuce lettuce) {
-        this.lettuce = lettuce;
-    }
-
-    @Override
-    public String toString() {
-        return "RedisProperties{" +
-                "host='" + host + '\'' +
-                ", port=" + port +
-                ", database=" + database +
-                ", ssl=" + ssl +
-                ", timeout=" + timeout +
-                '}';
     }
 }

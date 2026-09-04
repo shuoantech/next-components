@@ -58,7 +58,7 @@ import org.springframework.validation.annotation.Validated;
 @Getter
 @Setter
 @ToString
-@EqualsAndHashCode
+@EqualsAndHashCode(callSuper = false)
 @RequiredArgsConstructor
 @Validated
 @ConfigurationProperties(prefix = SystemConstants.Prefix.HOLOGRES)
@@ -86,7 +86,7 @@ public class DataSourceConfiguration {
     @Getter
     @Setter
     @ToString
-    @EqualsAndHashCode
+    @EqualsAndHashCode(callSuper = false)
     @RequiredArgsConstructor
     public static class HoloConfig {
         private String url;

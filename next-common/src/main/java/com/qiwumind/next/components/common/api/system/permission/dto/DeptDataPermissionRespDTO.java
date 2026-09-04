@@ -41,7 +41,7 @@ import java.util.Set;
 @Getter
 @Setter
 @ToString
-@EqualsAndHashCode
+@EqualsAndHashCode(callSuper = false)
 public class DeptDataPermissionRespDTO {
 
     /**

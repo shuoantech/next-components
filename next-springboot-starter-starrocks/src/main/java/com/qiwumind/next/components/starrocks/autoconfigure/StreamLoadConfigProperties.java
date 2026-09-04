@@ -42,7 +42,7 @@ import java.util.Map;
 @Getter
 @Setter
 @ToString
-@EqualsAndHashCode
+@EqualsAndHashCode(callSuper = false)
 @Configuration
 @ConfigurationProperties(prefix = SystemConstants.Prefix.StarRocks.CONFIG)
 public class StreamLoadConfigProperties {

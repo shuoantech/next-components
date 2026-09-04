@@ -47,7 +47,7 @@ import org.springframework.lang.NonNull;
 @Getter
 @Setter
 @ToString
-@EqualsAndHashCode
+@EqualsAndHashCode(callSuper = false)
 @RequiredArgsConstructor
 @ConfigurationProperties(prefix = SystemConstants.Prefix.Groovy.MYSQL_LOADER)
 public class GroovyMysqlLoaderProperties implements InitializingBean, EnvironmentAware {

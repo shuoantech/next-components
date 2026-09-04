@@ -46,9 +46,9 @@ public class RedisDebounceService {
         return Boolean.TRUE.equals(result);
     }
 
-    // 释放分布式锁
+    // 释放分布式锁（key 需与 acquireLock 一致，带上前缀）
     public void releaseLock(String key) {
-        lockService.releaseLock(key,"true");
+        lockService.releaseLock(DEBOUNCE_PREFIX + key, "true");
     }
 
 }

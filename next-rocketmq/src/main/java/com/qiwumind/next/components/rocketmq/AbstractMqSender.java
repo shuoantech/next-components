@@ -29,7 +29,6 @@ package com.qiwumind.next.components.rocketmq;
 
 import lombok.Getter;
 import lombok.Setter;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.rocketmq.client.apis.*;
 import org.apache.rocketmq.client.apis.message.Message;
@@ -45,7 +44,6 @@ import java.util.UUID;
 
 @Getter
 @Setter
-@Slf4j
 public abstract class AbstractMqSender implements InitializingBean, DisposableBean {
     /**
      *
@@ -71,9 +69,7 @@ public abstract class AbstractMqSender implements InitializingBean, DisposableBe
      */
     @Override
     public void afterPropertiesSet() throws Exception {
-        log.info("开始启动消息监听");
         producer = buildProducer(null, topic);
-        log.info("mq Sender启动。。。。producer={}", producer);
 
     }
 
@@ -98,10 +94,10 @@ public abstract class AbstractMqSender implements InitializingBean, DisposableBe
                 .build();
         try {
             final SendReceipt sendReceipt = producer.send(message);
-            log.info("Send message successfully, messageId={}", sendReceipt.getMessageId());
+//            log.info("Send message successfully, messageId={}", sendReceipt.getMessageId());
             return sendReceipt;
         } catch (Throwable t) {
-            log.error("Failed to send message", t);
+//            log.error("Failed to send message", t);
         }
         return null;
     }
@@ -130,10 +126,10 @@ public abstract class AbstractMqSender implements InitializingBean, DisposableBe
                 .build();
         try {
             final SendReceipt sendReceipt = producer.send(message);
-            log.info("Send message successfully, messageId={}", sendReceipt.getMessageId());
+//            log.info("Send message successfully, messageId={}", sendReceipt.getMessageId());
             return sendReceipt;
         } catch (Throwable t) {
-            log.error("Failed to send message", t);
+//            log.error("Failed to send message", t);
         }
         // Close the producer when you don't need it anymore.
         // You could close it manually or add this into the JVM shutdown hook.

@@ -39,7 +39,7 @@ import java.util.Set;
 @Getter
 @Setter
 @ToString
-@EqualsAndHashCode
+@EqualsAndHashCode(callSuper = false)
 @Accessors(chain  = true )
 public class LicenseLimits {
     private Integer maxUsers;              // 最大用户数

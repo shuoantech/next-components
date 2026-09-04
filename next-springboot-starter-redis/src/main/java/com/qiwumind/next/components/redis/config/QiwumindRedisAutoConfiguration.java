@@ -37,7 +37,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.serializer.RedisSerializer;
 
 /**
- * Redis 配置类（迁移自 qiwumind-framework，供 mq/test/protection 等模块使用）
+ * Redis 配置类
  * 与 {@link com.qiwumind.next.components.redis.autoconfigure.RedisAutoConfiguration} 共存：
  * 两者均以 @ConditionalOnMissingBean 保护 RedisTemplate，先注册者生效
  */

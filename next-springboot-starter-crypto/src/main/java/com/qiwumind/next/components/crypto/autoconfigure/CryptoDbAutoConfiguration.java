@@ -46,7 +46,7 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 @ConditionalOnClass(name = "org.apache.ibatis.plugin.Interceptor")
 @EnableConfigurationProperties(CryptoDbProperties.class)
-@ConditionalOnProperty(prefix = SystemConstants.Prefix.Crypto.CRYTO, name = "enabled", havingValue = "true", matchIfMissing = true)
+@ConditionalOnProperty(prefix = SystemConstants.Prefix.Crypto.CRYTO, name = "enabled", havingValue = "true")
 public class CryptoDbAutoConfiguration {
 
     @Bean

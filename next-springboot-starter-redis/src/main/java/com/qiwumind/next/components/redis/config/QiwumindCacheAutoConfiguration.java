@@ -48,7 +48,7 @@ import java.util.Objects;
 import static com.qiwumind.next.components.redis.config.QiwumindRedisAutoConfiguration.buildRedisSerializer;
 
 /**
- * Cache 配置类，基于 Redis 实现（迁移自 qiwumind-framework）
+ * Cache 配置类，基于 Redis 实现
  */
 @AutoConfiguration
 @EnableConfigurationProperties({CacheProperties.class, QiwumindCacheProperties.class})

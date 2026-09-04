@@ -44,7 +44,7 @@ import org.apache.commons.lang3.StringUtils;
 @Getter
 @Setter
 @ToString
-@EqualsAndHashCode
+@EqualsAndHashCode(callSuper = false)
 public class HoloClientConfig {
 
     private String deployEnv;

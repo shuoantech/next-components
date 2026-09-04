@@ -31,7 +31,7 @@ import com.qiwumind.next.components.quartz.core.JobTask;
 import com.qiwumind.next.components.quartz.core.dto.SysJob;
 import com.qiwumind.next.components.quartz.core.util.ScheduleUtils;
 import com.qiwumind.next.components.redis.core.cache.JedisCache;
-import com.qiwumind.next.components.redis.core.lock.JedisLockService;
+import com.qiwumind.next.components.redis.core.lock.LockService;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
 import org.quartz.Scheduler;
@@ -46,7 +46,7 @@ public class QuartzTimeBeanFactory implements InitializingBean {
     private AbstractQuartzJob quartzJob;
     private Scheduler scheduler;
     private JedisCache jedisCache;
-    private JedisLockService jedisLockService;
+    private LockService jedisLockService;
     private JobTask jobTask;
 
     //暂不支持多版本共存定时生效
@@ -80,7 +80,7 @@ public class QuartzTimeBeanFactory implements InitializingBean {
 
 
 
-    public JedisLockService getJedisLockService() {
+    public LockService getJedisLockService() {
         return jedisLockService;
     }
 
@@ -96,7 +96,7 @@ public class QuartzTimeBeanFactory implements InitializingBean {
         return quartzJob;
     }
 
-    public void setJedisLockService(JedisLockService jedisLockService) {
+    public void setJedisLockService(LockService jedisLockService) {
         this.jedisLockService = jedisLockService;
     }
 

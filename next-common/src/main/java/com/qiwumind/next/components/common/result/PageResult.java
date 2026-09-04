@@ -14,7 +14,7 @@ import java.util.List;
 @Getter
 @Setter
 @ToString
-@EqualsAndHashCode
+@EqualsAndHashCode(callSuper = false)
 public final class PageResult<T> implements Serializable {
 
     @Schema(description = "总量", requiredMode = Schema.RequiredMode.REQUIRED)

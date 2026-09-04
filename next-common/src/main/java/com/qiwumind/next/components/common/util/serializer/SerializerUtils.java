@@ -38,7 +38,7 @@ import com.esotericsoftware.kryo.kryo5.serializers.CompatibleFieldSerializer;
  * V1.0.0：对象池，因无法解决反序列化容器类（外部类）的原因而被移除，LastCommitId: a14f554e0085b6a179375a8ca04665434b73c7bd
  * V1.2.0：ThreadLocal + 手动设置Kryo所使用的类加载器（默认类加载器为创建kryo的类对象（Kryo.class）的类加载器）实现容器类的序列化和反序列化
  *
- * @since 2020/3/25
+ * @since 2026年8月
  */
 public class SerializerUtils {
 

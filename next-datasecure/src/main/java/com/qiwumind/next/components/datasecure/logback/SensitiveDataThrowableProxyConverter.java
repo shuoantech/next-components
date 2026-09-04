@@ -36,7 +36,7 @@ import lombok.Setter;
  * 异常堆栈敏感信息数据转换器
  *
  * @author chenyao
- * @since 2019年5月14日 上午11:49:42
+ * @since 2026年8月
  */
 @Setter
 @Getter

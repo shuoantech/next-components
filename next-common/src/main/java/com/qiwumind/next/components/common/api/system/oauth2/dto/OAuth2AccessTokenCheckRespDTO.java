@@ -45,7 +45,7 @@ import java.util.Map;
 @Getter
 @Setter
 @ToString
-@EqualsAndHashCode
+@EqualsAndHashCode(callSuper = false)
 @RequiredArgsConstructor
 @Accessors(chain = true)
 public class OAuth2AccessTokenCheckRespDTO implements Serializable {

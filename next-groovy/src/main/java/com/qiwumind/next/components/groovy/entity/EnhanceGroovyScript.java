@@ -45,7 +45,7 @@ import lombok.EqualsAndHashCode;
 @Getter
 @Setter
 @ToString
-@EqualsAndHashCode
+@EqualsAndHashCode(callSuper = false)
 public class EnhanceGroovyScript {
     /**
      * key分隔符

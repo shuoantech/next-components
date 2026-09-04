@@ -31,10 +31,8 @@ import com.github.rholder.retry.Retryer;
 import com.github.rholder.retry.RetryerBuilder;
 import com.github.rholder.retry.StopStrategies;
 import com.github.rholder.retry.WaitStrategies;
-import com.google.common.base.Predicates;
 
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 
 /**
  * 构造重试器
@@ -45,10 +43,6 @@ public class RedisRetryerBuilder {
         //定义重试机制
         final Retryer<V> retryer = RetryerBuilder.<V> newBuilder()
                 //retryIf 重试条件
-                .retryIfExceptionOfType(Exception.class)
-                .retryIfException(Predicates.equalTo(new Exception()))
-//                .retryIfResult(Predicates.equalTo(false))
-                .retryIfExceptionOfType(TimeoutException.class)
                 .retryIfException()
                 .retryIfRuntimeException()
                 //等待策略：每次请求间隔1s

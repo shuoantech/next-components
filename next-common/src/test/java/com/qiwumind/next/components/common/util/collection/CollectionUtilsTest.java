@@ -47,7 +47,7 @@
 //    @Getter
 //    @Setter
 //    @ToString
-//    @EqualsAndHashCode
+//    @EqualsAndHashCode(callSuper = false)
 //    @AllArgsConstructor
 //    private static class Dog {
 //

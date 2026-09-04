@@ -47,7 +47,7 @@ import java.util.List;
 @Getter
 @Setter
 @ToString
-@EqualsAndHashCode
+@EqualsAndHashCode(callSuper = false)
 @RequiredArgsConstructor
 @Validated
 @ConfigurationProperties(prefix = SystemConstants.Prefix.PDF)
@@ -69,7 +69,7 @@ public class PdfProperties {
     @Getter
     @Setter
     @ToString
-    @EqualsAndHashCode
+    @EqualsAndHashCode(callSuper = false)
     @RequiredArgsConstructor
     public static class Fonts {
 
@@ -95,7 +95,7 @@ public class PdfProperties {
     @Getter
     @Setter
     @ToString
-    @EqualsAndHashCode
+    @EqualsAndHashCode(callSuper = false)
     @RequiredArgsConstructor
     public static class FontItem {
 
@@ -122,7 +122,7 @@ public class PdfProperties {
     @Getter
     @Setter
     @ToString
-    @EqualsAndHashCode
+    @EqualsAndHashCode(callSuper = false)
     @RequiredArgsConstructor
     public static class Export {
 

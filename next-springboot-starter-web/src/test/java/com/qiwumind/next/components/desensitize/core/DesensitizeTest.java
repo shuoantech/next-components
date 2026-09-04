@@ -90,7 +90,7 @@ public class DesensitizeTest {
     @Getter
     @Setter
     @ToString
-    @EqualsAndHashCode
+    @EqualsAndHashCode(callSuper = false)
     @RequiredArgsConstructor
     public static class DesensitizeDemo {
 

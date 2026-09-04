@@ -25,7 +25,6 @@
 
 package com.qiwumind.next.components.redis.core.cache;
 
-
 import com.google.common.base.Preconditions;
 import com.qiwumind.next.components.redis.core.JedisPoolManager;
 import com.qiwumind.next.components.redis.core.constants.RedisConstant;
@@ -45,6 +44,8 @@ import java.util.function.Consumer;
 
 /**
  * 使用Jedis 操作
+ * <p>
+ * 所有方法均通过 try-with-resources 从连接池借出并归还连接，异常时连接也能正确归还，避免连接泄漏。
  */
 public class JedisCache {
     private Logger logger = LoggerFactory.getLogger(JedisCache.class);
@@ -78,12 +79,8 @@ public class JedisCache {
      * @return T
      */
     public <T, R> R multiCall(T t, RedisCallBack<T, R> callback) {
-        Jedis jedis = null;
-        try {
-            jedis = this.poolManager.getJedis();
+        try (Jedis jedis = this.poolManager.getJedis()) {
             return callback.call(t, jedis);
-        } finally {
-            close(jedis);
         }
     }
 
@@ -152,9 +149,7 @@ public class JedisCache {
         String cursor = ScanParams.SCAN_POINTER_START;
         ScanParams params = new ScanParams().match(pattern).count(count);
         int iteration = 0;
-        Jedis jedis = null;
-        try {
-            jedis = this.poolManager.getJedis();
+        try (Jedis jedis = this.poolManager.getJedis()) {
             do {
                 // 防止无限循环
                 if (iteration++ > MAX_SCAN_ITERATIONS) {
@@ -166,8 +161,6 @@ public class JedisCache {
                 cursor = result.getCursor();
 
             } while (!cursor.equals(ScanParams.SCAN_POINTER_START));
-        } finally {
-            close(jedis);
         }
 
         logger.debug("SCAN 完成, pattern: {}, 共获取 {} 个key, 迭代次数: {}",
@@ -199,12 +192,8 @@ public class JedisCache {
         scanKeys(pattern, batchSize, key -> {
             batch.add(key);
             if (batch.size() >= batchSize) {
-                Jedis jedis = null;
-                try {
-                    jedis = this.poolManager.getJedis();
+                try (Jedis jedis = this.poolManager.getJedis()) {
                     deletedCount[0] += jedis.del(batch.toArray(new String[0]));
-                } finally {
-                    close(jedis);
                 }
                 batch.clear();
             }
@@ -212,12 +201,8 @@ public class JedisCache {
 
         // 删除最后一批
         if (!batch.isEmpty()) {
-            Jedis jedis = null;
-            try {
-                jedis = this.poolManager.getJedis();
+            try (Jedis jedis = this.poolManager.getJedis()) {
                 deletedCount[0] += jedis.del(batch.toArray(new String[0]));
-            } finally {
-                close(jedis);
             }
         }
 
@@ -249,9 +234,7 @@ public class JedisCache {
         ScanParams params = new ScanParams().match(pattern).count(count);
         int iteration = 0;
         long processedCount = 0;
-        Jedis jedis = null;
-        try {
-            jedis = this.poolManager.getJedis();
+        try (Jedis jedis = this.poolManager.getJedis()) {
             do {
                 if (iteration++ > MAX_SCAN_ITERATIONS) {
                     logger.warn("SCAN 超过最大迭代次数 {}, pattern: {}", MAX_SCAN_ITERATIONS, pattern);
@@ -272,12 +255,11 @@ public class JedisCache {
 
                 cursor = result.getCursor();
             } while (!cursor.equals(ScanParams.SCAN_POINTER_START));
-        } finally {
-            close(jedis);
         }
 
         logger.info("SCAN 流式处理完成, pattern: {}, 共处理 {} 个key", pattern, processedCount);
     }
+
 // ==============   string type =================
 
     /**
@@ -285,17 +267,16 @@ public class JedisCache {
      * @param key
      * @param value
      * @param expireTime
-     * @throws Exception
      */
     public <T> void setValueByKey(final int dbIndex, final String key, final T value, final int expireTime) {
         final String tmpKey = this.getKey(key);
-        final Jedis jedis = this.poolManager.getJedis();
-        jedis.select(dbIndex);//需要调用一个方法，设置使用第几个database
-        jedis.set(tmpKey, SerializationUtils.getStrFromObj(value));
-        if (expireTime > 0) {
-            jedis.expire(tmpKey, expireTime);
+        try (Jedis jedis = this.poolManager.getJedis()) {
+            jedis.select(dbIndex);//需要调用一个方法，设置使用第几个database
+            jedis.set(tmpKey, SerializationUtils.getStrFromObj(value));
+            if (expireTime > 0) {
+                jedis.expire(tmpKey, expireTime);
+            }
         }
-        this.close(jedis);
     }
 
     /**
@@ -304,17 +285,16 @@ public class JedisCache {
      * @param key
      * @param value
      * @param expireTime 0 表示不过期
-     * @throws Exception
      */
     public <T> void setValueByKey(final String key, final T value, final int expireTime) {
         final String tmpKey = getKey(key);
-        final Jedis jedis = this.poolManager.getJedis();
-        Preconditions.checkNotNull(jedis, "jedis不能为空");
-        jedis.set(tmpKey, SerializationUtils.getStrFromObj(value));
-        if (expireTime > 0) {
-            jedis.expire(tmpKey, expireTime);
+        try (Jedis jedis = this.poolManager.getJedis()) {
+            Preconditions.checkNotNull(jedis, "jedis不能为空");
+            jedis.set(tmpKey, SerializationUtils.getStrFromObj(value));
+            if (expireTime > 0) {
+                jedis.expire(tmpKey, expireTime);
+            }
         }
-        close(jedis);
     }
 
     /**
@@ -322,14 +302,15 @@ public class JedisCache {
      *
      * @param key
      * @return
-     * @throws Exception
      */
+    @SuppressWarnings("unchecked")
     public <T> T getValueByKey(final String key) {
         final String tmpKey = getKey(key);
-        final Jedis jedis = this.poolManager.getJedis();
-        Preconditions.checkNotNull(jedis, "jedis不能为空");
-        final String result = jedis.get(tmpKey);
-        close(jedis);
+        final String result;
+        try (Jedis jedis = this.poolManager.getJedis()) {
+            Preconditions.checkNotNull(jedis, "jedis不能为空");
+            result = jedis.get(tmpKey);
+        }
         if (StringUtils.isBlank(result)) {
             return null;
         }
@@ -340,14 +321,14 @@ public class JedisCache {
      * @param dbIndex
      * @param key
      * @return
-     * @throws Exception
      */
     public String getValueByKey(final int dbIndex, final String key) {
         final String tmpKey = this.getKey(key);
-        final Jedis jedis = this.poolManager.getJedis();
-        jedis.select(dbIndex);
-        final String result = jedis.get(tmpKey);
-        this.close(jedis);
+        final String result;
+        try (Jedis jedis = this.poolManager.getJedis()) {
+            jedis.select(dbIndex);
+            result = jedis.get(tmpKey);
+        }
         if (StringUtils.isBlank(result)) {
             return null;
         }
@@ -366,17 +347,18 @@ public class JedisCache {
      * @param end   结束查询的位置元素
      * @return
      */
+    @SuppressWarnings("unchecked")
     public <T> Set<T> zrange(final String key, final int start, final int end) {
         final String tmpKey = this.getKey(key);
-        final Jedis jedis = this.poolManager.getJedis();
-        final List<String> set = jedis.zrange(tmpKey, start, end);
-        this.close(jedis);
+        final List<String> set;
+        try (Jedis jedis = this.poolManager.getJedis()) {
+            set = jedis.zrange(tmpKey, start, end);
+        }
         // 使用 LinkedHashSet 保持 Sorted Set 的排序顺序
-        final Set<T> result = new LinkedHashSet<T>();
+        final Set<T> result = new LinkedHashSet<>();
         if (CollectionUtils.isNotEmpty(set)) {
-            final Iterator<String> iterator = set.iterator();
-            while (iterator.hasNext()) {
-                result.add((T) SerializationUtils.getObjFromStr(iterator.next()));
+            for (String item : set) {
+                result.add((T) SerializationUtils.getObjFromStr(item));
             }
         }
         return result;
@@ -391,10 +373,9 @@ public class JedisCache {
      */
     public long zrem(final String key, final String value) {
         final String tmpKey = this.getKey(key);
-        final Jedis jedis = this.poolManager.getJedis();
-        final long s = jedis.zrem(tmpKey, SerializationUtils.getStrFromObj(value));
-        this.close(jedis);
-        return s;
+        try (Jedis jedis = this.poolManager.getJedis()) {
+            return jedis.zrem(tmpKey, SerializationUtils.getStrFromObj(value));
+        }
     }
 
     /**
@@ -405,22 +386,22 @@ public class JedisCache {
      * @param end
      * @return
      */
+    @SuppressWarnings("unchecked")
     public <T> Set<T> zrevrange(final String key, final int start, final int end) {
         final String tmpKey = this.getKey(key);
-        final Jedis jedis = this.poolManager.getJedis();
-        final List<String> set = jedis.zrevrange(tmpKey, start, end);
-        this.close(jedis);
+        final List<String> set;
+        try (Jedis jedis = this.poolManager.getJedis()) {
+            set = jedis.zrevrange(tmpKey, start, end);
+        }
         // 使用 LinkedHashSet 保持 Sorted Set 的排序顺序
-        final Set<T> result = new LinkedHashSet<T>();
+        final Set<T> result = new LinkedHashSet<>();
         if (CollectionUtils.isNotEmpty(set)) {
-            final Iterator<String> iterator = set.iterator();
-            while (iterator.hasNext()) {
-                result.add((T) SerializationUtils.getObjFromStr(iterator.next()));
+            for (String item : set) {
+                result.add((T) SerializationUtils.getObjFromStr(item));
             }
         }
         return result;
     }
-
 
 
     /* ==================hash 结构=========================== */
@@ -435,10 +416,9 @@ public class JedisCache {
      */
     public <T> Long hset(final String key, final String mapKey, final T value) {
         final String tmpKey = this.getKey(key);
-        final Jedis jedis = this.poolManager.getJedis();
-        final Long res = jedis.hset(tmpKey, mapKey, SerializationUtils.getStrFromObj(value));
-        this.close(jedis);
-        return res;
+        try (Jedis jedis = this.poolManager.getJedis()) {
+            return jedis.hset(tmpKey, mapKey, SerializationUtils.getStrFromObj(value));
+        }
     }
 
     /**
@@ -451,28 +431,19 @@ public class JedisCache {
      */
     public <T> Long hset(final String key, final String mapKey, final T value, final int timeout) {
         final String tmpKey = this.getKey(key);
-        final Jedis jedis = this.poolManager.getJedis();
-        final Long result = jedis.hset(tmpKey, mapKey, SerializationUtils.getStrFromObj(value));
-        jedis.expire(tmpKey, timeout);
-        this.close(jedis);
-        return result;
+        try (Jedis jedis = this.poolManager.getJedis()) {
+            final Long result = jedis.hset(tmpKey, mapKey, SerializationUtils.getStrFromObj(value));
+            jedis.expire(tmpKey, timeout);
+            return result;
+        }
     }
 
-    public <T> Long hsetMap(final String key, Map<String, String> map) {
+    public Long hsetMap(final String key, Map<String, String> map) {
         final String tmpKey = this.getKey(key);
-        final Jedis jedis = this.poolManager.getJedis();
-        final Long res = jedis.hset(tmpKey, map);
-        this.close(jedis);
-        return res;
+        try (Jedis jedis = this.poolManager.getJedis()) {
+            return jedis.hset(tmpKey, map);
+        }
     }
-
-//    public <T> Long hsetMapT(final String key, Map<String, T> map) {
-//        final String tmpKey = this.getKey(key);
-//        final Jedis jedis = this.poolManager.getJedis();
-//        final Long res = jedis.hset(tmpKey, map);
-//        this.close(jedis);
-//        return res;
-//    }
 
     /**
      * hashmap中取 对应的对象值
@@ -481,11 +452,13 @@ public class JedisCache {
      * @param fields
      * @return
      */
+    @SuppressWarnings("unchecked")
     public <T> T hget(final String key, final String fields) {
         final String tmpKey = this.getKey(key);
-        final Jedis jedis = this.poolManager.getJedis();
-        final String str = jedis.hget(tmpKey, fields);
-        this.close(jedis);
+        final String str;
+        try (Jedis jedis = this.poolManager.getJedis()) {
+            str = jedis.hget(tmpKey, fields);
+        }
         if (StringUtils.isBlank(str)) {
             return null;
         }
@@ -501,10 +474,9 @@ public class JedisCache {
      */
     public Long hdel(final String key, final String... fields) {
         final String tmpKey = this.getKey(key);
-        final Jedis jedis = this.poolManager.getJedis();
-        final Long result = jedis.hdel(tmpKey, fields);
-        this.close(jedis);
-        return result;
+        try (Jedis jedis = this.poolManager.getJedis()) {
+            return jedis.hdel(tmpKey, fields);
+        }
     }
 
     /**
@@ -513,12 +485,10 @@ public class JedisCache {
      */
     public Map<String, String> hgetAll(final String key) {
         final String tmpKey = this.getKey(key);
-        final Jedis jedis = this.poolManager.getJedis();
-        final Map<String, String> result = jedis.hgetAll(tmpKey);
-        this.close(jedis);
-        return result;
+        try (Jedis jedis = this.poolManager.getJedis()) {
+            return jedis.hgetAll(tmpKey);
+        }
     }
-
 
 
     /* ==================List 结构=========================== */
@@ -532,10 +502,9 @@ public class JedisCache {
      */
     public <T> long rpush(final String key, final T value) {
         final String tmpKey = this.getKey(key);
-        final Jedis jedis = this.poolManager.getJedis();
-        final long count = jedis.rpush(tmpKey, SerializationUtils.getStrFromObj(value));
-        this.close(jedis);
-        return count;
+        try (Jedis jedis = this.poolManager.getJedis()) {
+            return jedis.rpush(tmpKey, SerializationUtils.getStrFromObj(value));
+        }
     }
 
     /**
@@ -547,24 +516,22 @@ public class JedisCache {
     public long del(final String key) {
         final String tmpKey = this.getKey(key);
         this.logger.info("***del key={}***", tmpKey);
-        final Jedis jedis = this.poolManager.getJedis();
-        final long s = jedis.del(tmpKey);
-        this.close(jedis);
-        return s;
+        try (Jedis jedis = this.poolManager.getJedis()) {
+            return jedis.del(tmpKey);
+        }
     }
 
 
     /**
      * @param dbIndex
      * @param key
-     * @throws Exception
      */
     public void deleteByKey(final int dbIndex, final String key) {
         final String tmpKey = this.getKey(key);
-        final Jedis jedis = this.poolManager.getJedis();
-        jedis.select(dbIndex);
-        jedis.del(tmpKey);
-        this.close(jedis);
+        try (Jedis jedis = this.poolManager.getJedis()) {
+            jedis.select(dbIndex);
+            jedis.del(tmpKey);
+        }
     }
 
     /**
@@ -575,11 +542,9 @@ public class JedisCache {
      */
     public boolean exists(final String key) {
         final String tmpnewKey = this.getKey(key);
-
-        final Jedis jedis = this.poolManager.getJedis();
-        final boolean exists = jedis.exists(tmpnewKey);
-        this.close(jedis);
-        return exists;
+        try (Jedis jedis = this.poolManager.getJedis()) {
+            return jedis.exists(tmpnewKey);
+        }
     }
 
     /**
@@ -592,10 +557,9 @@ public class JedisCache {
     public String rename(final String oldKey, final String newKey) {
         final String tmpKey = this.getKey(oldKey);
         final String tmpnewKey = this.getKey(newKey);
-        final Jedis jedis = this.poolManager.getJedis();
-        final String result = jedis.rename(tmpKey, tmpnewKey);
-        this.close(jedis);
-        return result;
+        try (Jedis jedis = this.poolManager.getJedis()) {
+            return jedis.rename(tmpKey, tmpnewKey);
+        }
     }
 
     /**
@@ -606,9 +570,9 @@ public class JedisCache {
      */
     public void expire(final String key, final int seconds) {
         final String tmpKey = this.getKey(key);
-        final Jedis jedis = this.poolManager.getJedis();
-        jedis.expire(tmpKey, seconds);
-        this.close(jedis);
+        try (Jedis jedis = this.poolManager.getJedis()) {
+            jedis.expire(tmpKey, seconds);
+        }
     }
 
     /**
@@ -618,9 +582,9 @@ public class JedisCache {
      */
     public void persist(final String key) {
         final String tmpKey = this.getKey(key);
-        final Jedis jedis = this.poolManager.getJedis();
-        jedis.persist(tmpKey);
-        this.close(jedis);
+        try (Jedis jedis = this.poolManager.getJedis()) {
+            jedis.persist(tmpKey);
+        }
     }
 
     /**
@@ -631,10 +595,9 @@ public class JedisCache {
      */
     public long incr(final String key) {
         final String tmpKey = this.getKey(key);
-        final Jedis jedis = this.poolManager.getJedis();
-        final long l = jedis.incr(tmpKey);
-        this.close(jedis);
-        return l;
+        try (Jedis jedis = this.poolManager.getJedis()) {
+            return jedis.incr(tmpKey);
+        }
     }
 
     /**
@@ -645,10 +608,9 @@ public class JedisCache {
      */
     public String setex(final String key, final String field, final int time) {
         final String tmpKey = this.getKey(key);
-        final Jedis jedis = this.poolManager.getJedis();
-        final String result = jedis.setex(tmpKey, time, field);
-        this.close(jedis);
-        return result;
+        try (Jedis jedis = this.poolManager.getJedis()) {
+            return jedis.setex(tmpKey, time, field);
+        }
     }
 
     /**
@@ -661,10 +623,9 @@ public class JedisCache {
      */
     public Long pfadd(final String key, final String[] elements) {
         final String tmpKey = this.getKey(key);
-        final Jedis jedis = this.poolManager.getJedis();
-        final Long result = jedis.pfadd(tmpKey, elements);
-        this.close(jedis);
-        return result;
+        try (Jedis jedis = this.poolManager.getJedis()) {
+            return jedis.pfadd(tmpKey, elements);
+        }
     }
 
 }

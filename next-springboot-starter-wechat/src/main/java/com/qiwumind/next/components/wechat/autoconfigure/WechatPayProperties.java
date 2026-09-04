@@ -41,7 +41,7 @@ import com.qiwumind.next.components.common.constant.SystemConstants;
 @Getter
 @Setter
 @ToString
-@EqualsAndHashCode
+@EqualsAndHashCode(callSuper = false)
 @RequiredArgsConstructor
 @ConfigurationProperties(prefix = SystemConstants.Prefix.ThirdParty.WECHAT_PAY)
 public class WechatPayProperties {

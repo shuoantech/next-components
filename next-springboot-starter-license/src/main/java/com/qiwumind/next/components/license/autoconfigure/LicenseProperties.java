@@ -42,7 +42,7 @@ import java.util.List;
 @Getter
 @Setter
 @ToString
-@EqualsAndHashCode
+@EqualsAndHashCode(callSuper = false)
 @RequiredArgsConstructor
 @Validated
 @ConfigurationProperties(prefix = SystemConstants.Prefix.LICENSE)
@@ -56,7 +56,7 @@ public class LicenseProperties {
     @Getter
     @Setter
     @ToString
-    @EqualsAndHashCode
+    @EqualsAndHashCode(callSuper = false)
     @RequiredArgsConstructor
     public static class File {
         private String path = "license/license.dat";
@@ -67,7 +67,7 @@ public class LicenseProperties {
     @Getter
     @Setter
     @ToString
-    @EqualsAndHashCode
+    @EqualsAndHashCode(callSuper = false)
     @RequiredArgsConstructor
     public static class Validation {
         private boolean strictMode = true;
@@ -90,7 +90,7 @@ public class LicenseProperties {
     @Getter
     @Setter
     @ToString
-    @EqualsAndHashCode
+    @EqualsAndHashCode(callSuper = false)
     @RequiredArgsConstructor
     public static class Signing {
         @NotBlank(message = "私钥路径不能为空")
@@ -107,7 +107,7 @@ public class LicenseProperties {
     @Getter
     @Setter
     @ToString
-    @EqualsAndHashCode
+    @EqualsAndHashCode(callSuper = false)
     @RequiredArgsConstructor
     public static class Binding {
         private boolean requireIpBinding = false;

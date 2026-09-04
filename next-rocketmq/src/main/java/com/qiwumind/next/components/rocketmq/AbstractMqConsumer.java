@@ -29,7 +29,6 @@ package com.qiwumind.next.components.rocketmq;
 
 import lombok.Getter;
 import lombok.Setter;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.rocketmq.client.apis.*;
 import org.apache.rocketmq.client.apis.consumer.FilterExpression;
 import org.apache.rocketmq.client.apis.consumer.FilterExpressionType;
@@ -41,7 +40,6 @@ import java.util.Collections;
 
 @Getter
 @Setter
-@Slf4j
 public abstract class AbstractMqConsumer implements InitializingBean, MessageListener {
     /** */
     protected String topic;
@@ -63,9 +61,7 @@ public abstract class AbstractMqConsumer implements InitializingBean, MessageLis
      */
     @Override
     public void afterPropertiesSet() throws Exception {
-        log.info("开始启动消息监听Consumer");
         pushConsumer = buildPushConsumer();
-        log.info("mq  pushConsumer 启动。。。。pushConsumer={}", pushConsumer);
     }
 
 

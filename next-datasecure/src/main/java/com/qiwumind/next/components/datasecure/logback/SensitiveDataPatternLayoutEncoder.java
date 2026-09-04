@@ -41,7 +41,7 @@ import ch.qos.logback.core.pattern.PatternLayoutEncoderBase;
  * 用于支持输出异常堆栈的时候，也能正常过滤敏感信息
  *
  * @author chenyao
- * @since 2019年5月15日 上午10:25:14
+ * @since 2026年8月
  * @see ch.qos.logback.classic.encoder.PatternLayoutEncoder
  */
 public class SensitiveDataPatternLayoutEncoder extends PatternLayoutEncoderBase<ILoggingEvent> {

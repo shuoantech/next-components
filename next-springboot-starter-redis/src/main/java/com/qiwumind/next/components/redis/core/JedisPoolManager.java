@@ -53,16 +53,11 @@ public class JedisPoolManager {
     private int port = 6379;
     private int dbNo;
     private JedisPool pool;
-    private final String version = "1.0.0";
 
     /**
      * 环境 默认test
      */
     private String env = RedisConstant.DEV_ENV;
-    /**
-     * zk 子节点(根据公司部门等相关信息生成)
-     */
-    private String redisConfigKey;
 
     public JedisPoolManager() {
         super();
@@ -73,23 +68,6 @@ public class JedisPoolManager {
         this.host = host;
         this.password = password;
         this.port = port;
-    }
-
-    public JedisPoolManager(String redisConfigKey, String zkServer, int maxTotal, int maxIdle, int timeOut) {
-        super();
-        this.maxTotal = maxTotal;
-        this.maxIdle = maxIdle;
-        this.timeOut = timeOut;
-        this.redisConfigKey = redisConfigKey;
-    }
-
-    public JedisPoolManager(String redisConfigKey, String zkServer, int maxTotal, int maxIdle, int timeOut, int maxWaitMillis) {
-        super();
-        this.maxTotal = maxTotal;
-        this.maxIdle = maxIdle;
-        this.timeOut = timeOut;
-        this.redisConfigKey = redisConfigKey;
-        this.maxWaitMillis = maxWaitMillis;
     }
 
     public void init() {
@@ -107,8 +85,8 @@ public class JedisPoolManager {
         try {
             this.pool = new JedisPool(config, this.host, this.port, this.timeOut, this.password);
             log.info(
-                    "========> jedis pool is created  by  JedisPool,version:{}, host:{},port:{},dbNo:{},maxIdle:{},maxtotal:{},timeout:{} maxWaitMillis:{}",
-                    this.version, this.host, this.port, this.dbNo, this.maxIdle, this.maxTotal, this.timeOut,
+                    "========> jedis pool is created by JedisPool, host:{},port:{},dbNo:{},maxIdle:{},maxtotal:{},timeout:{} maxWaitMillis:{}",
+                    this.host, this.port, this.dbNo, this.maxIdle, this.maxTotal, this.timeOut,
                     this.maxWaitMillis);
         } catch (Exception e) {
             log.error("jedis pool is created fail " + e.getMessage(), e);
@@ -124,7 +102,6 @@ public class JedisPoolManager {
      */
     public Jedis getJedis() {
         Validate.validState(pool != null, "Redis pool is not initialized. Please call init() first.");
-        
         try {
             final Retryer<Jedis> retryer = RedisRetryerBuilder.build();
             final Jedis jedis = retryer.call(new Callable<Jedis>() {
@@ -233,10 +210,6 @@ public class JedisPoolManager {
         this.pool = pool;
     }
 
-    public void setRedisConfigKey(String redisConfigKey) {
-        this.redisConfigKey = redisConfigKey;
-    }
-
     public int getMaxTotal() {
         return this.maxTotal;
     }
@@ -269,14 +242,6 @@ public class JedisPoolManager {
         return this.pool;
     }
 
-    public String getVersion() {
-        return this.version;
-    }
-
-    public String getRedisConfigKey() {
-        return this.redisConfigKey;
-    }
-
     public long getMaxWaitMillis() {
         return this.maxWaitMillis;
     }
@@ -293,9 +258,6 @@ public class JedisPoolManager {
         this.env = env;
     }
 
-    /**
-     * 添加缺失的构造函数
-     */
     public JedisPoolManager(String host, String password, int port, int dbNo) {
         super();
         this.host = host;

@@ -190,9 +190,11 @@ public class RedisConnectionManager {
         RedisURI.Builder builder = RedisURI.builder()
                 .withHost(redisConfiguration.getHost())
                 .withPort(redisConfiguration.getPort())
-                .withTimeout(Duration.ofSeconds(redisConfiguration.getTimeout()));
+                .withTimeout(redisConfiguration.getTimeout());
 
         // 设置密码
+        // 注：当前 Lettuce 版本的 RedisURI.Builder 不支持单独设置 username，
+        // 使用 Redis 6 ACL 自定义账号时请走主连接工厂（RedisAutoConfiguration）或 Redisson
         if (redisConfiguration.getPassword() != null && !redisConfiguration.getPassword().isEmpty()) {
             builder.withPassword(redisConfiguration.getPassword().toCharArray());
         }
@@ -203,7 +205,7 @@ public class RedisConnectionManager {
         }
 
         // 设置SSL
-        if (redisConfiguration.isSsl()) {
+        if (redisConfiguration.isSslEnabled()) {
             builder.withSsl(true);
         }
 

@@ -41,7 +41,7 @@ import java.util.Map;
 @Getter
 @Setter
 @ToString
-@EqualsAndHashCode
+@EqualsAndHashCode(callSuper = false)
 @RequiredArgsConstructor
 public abstract class AbstractRedisMessage {
 

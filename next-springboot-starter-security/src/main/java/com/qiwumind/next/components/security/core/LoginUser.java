@@ -46,7 +46,7 @@ import java.util.Map;
 @Getter
 @Setter
 @ToString
-@EqualsAndHashCode
+@EqualsAndHashCode(callSuper = false)
 @RequiredArgsConstructor
 public class LoginUser {
 

@@ -40,7 +40,7 @@ import lombok.RequiredArgsConstructor;
 @Getter
 @Setter
 @ToString
-@EqualsAndHashCode
+@EqualsAndHashCode(callSuper = false)
 @RequiredArgsConstructor
 public class DictDataRespDTO {
 

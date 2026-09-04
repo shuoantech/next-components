@@ -42,7 +42,7 @@ import com.qiwumind.next.components.common.constant.SystemConstants;
 @Getter
 @Setter
 @ToString
-@EqualsAndHashCode
+@EqualsAndHashCode(callSuper = false)
 @RequiredArgsConstructor
 public class TracerProperties {
 }

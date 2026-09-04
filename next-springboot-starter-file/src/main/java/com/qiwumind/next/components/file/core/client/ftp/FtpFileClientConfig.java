@@ -17,7 +17,7 @@ import org.hibernate.validator.constraints.URL;
 @Getter
 @Setter
 @ToString
-@EqualsAndHashCode
+@EqualsAndHashCode(callSuper = false)
 @RequiredArgsConstructor
 public class FtpFileClientConfig implements FileClientConfig {
 

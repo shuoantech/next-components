@@ -38,7 +38,7 @@ import java.util.List;
 @Getter
 @Setter
 @ToString
-@EqualsAndHashCode
+@EqualsAndHashCode(callSuper = false)
 @Accessors(chain  = true )
 public class LicenseBinding {
     private List<String> allowedIps;      // 允许的IP（支持CIDR）

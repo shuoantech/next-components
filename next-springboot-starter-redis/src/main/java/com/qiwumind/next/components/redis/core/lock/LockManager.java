@@ -28,9 +28,8 @@ package com.qiwumind.next.components.redis.core.lock;
 
 
 public class LockManager {
-    private LockService lockService;
+    private final LockService lockService;
 
-    //私有化构造函数
     public LockManager(LockService lockService) {
         this.lockService = lockService;
     }
