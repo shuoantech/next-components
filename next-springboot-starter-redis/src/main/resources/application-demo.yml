@@ -1,0 +1,29 @@
+#注意事项
+#    前缀必须是 spring.data.redis——Spring Boot 3 起官方已废弃 spring.redis，写成旧前缀是死配置（你 prod 里原来那份就没生效过）
+#    仅支持单机/代理模式——阿里云标准版、集群版代理地址（默认 6379 端口那种）都是这个模式，直接用；sentinel/cluster 配置项该 jar 会忽略
+#    密码含 @ : # 等特殊字符时整体加引号
+#    dev/prod 分环境配在 application-{dev,prod}.yml，该 jar 会正常吃到 profile 合并结果
+
+spring:
+  data:
+    redis:
+      # 方式二选一：url 或 host/port 分离（url 仅 Redisson 优先使用，建议用分离式）
+      # url: redis://:password@127.0.0.1:6379/0
+      host: 127.0.0.1
+      port: 6379
+      username: ""                # Redis 6 ACL 用户，默认账号留空
+      password: ""
+      database: 0
+      ssl:
+        enabled: false                  # 开启 TLS 的实例设 true
+      timeout: 5s                 # Lettuce 与 Redisson 共用
+      client-name: sa-manager     # 可选，服务端可识别客户端
+      lettuce:
+        shutdown-timeout: 100ms
+        pool:                     # 连接池（需要 commons-pool2，已由 jedis 依赖带入）
+          max-active: 20          # 勿超过实例规格最大连接数
+          max-idle: 10
+          min-idle: 2
+          max-wait: 3000ms        # -1 表示无限等待
+          time-between-eviction-runs: 30s
+
